@@ -19,6 +19,7 @@ public:
 
 // Operations
 public:
+	bool primera_vez;
 
 // Overrides
 	protected:
@@ -31,6 +32,8 @@ public:
 	// Generated message map functions
 protected:
 	afx_msg void OnPaint();
+	void RenderLoop();
+
 	DECLARE_MESSAGE_MAP()
 };
 
