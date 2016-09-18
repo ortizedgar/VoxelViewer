@@ -5,7 +5,6 @@
 #pragma comment ( lib, "OpenGL32.lib" )
 #pragma comment ( lib, "glew32.lib" )
 
-
 CRenderEngine::CRenderEngine() 
 {
 	game_status = 0;
