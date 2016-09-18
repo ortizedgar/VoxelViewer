@@ -8,11 +8,8 @@ uniform float voxel_step;
 uniform int game_status;
 uniform int filter;
 uniform float time;
-
 varying vec3 vTexCoord;
-
 const float cant_total = 15.0;
-
 
 // transfer function
 vec3 transfer(float I)
@@ -41,7 +38,7 @@ float opDisplace( vec3 p )
     return d1+d2;
 }
 
-float3 tex3d(vec3 pos)
+vec3 tex3d(vec3 pos)
 {
 	vec3 S = vec3(0,0,0);
 	float dist = opDisplace(pos);
@@ -53,7 +50,7 @@ float3 tex3d(vec3 pos)
 	float k = 1.0/256.0;
 	vec4 tx = texture3D(s_texture0,pos.xzy*k);
 	
-	return filter ? transfer(tx.r) : tx.rgb + S;
+	return filter!=0 ? transfer(tx.r) : tx.rgb + S;
 }
 
 void main()
@@ -65,7 +62,7 @@ void main()
 	
 	vec3 rd = normalize(iViewDir + iDy*uv.y + iDx*uv.x);
 	vec3 ro = iLookFrom + rd*voxel_step0;
-	float3 S = vec3(0.0,0.0,0.0);
+	vec3 S = vec3(0.0,0.0,0.0);
 	float k = 1.0;
 
 	// ray marching
@@ -75,11 +72,9 @@ void main()
 	}
 	S /= cant_total;
 	
-	if(game_status)
+	if(game_status!=0)
 		S.rg *= 1.5;
 	
 	gl_FragColor = vec4( S, 1.0 );
 	
 }
-
-

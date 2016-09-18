@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Shaders Files">
+      <UniqueIdentifier>{186c6550-e779-4865-ab53-1962052160be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib Files">
+      <UniqueIdentifier>{8563e0a5-3445-42ee-9cdc-df0868255e4d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -81,6 +87,20 @@
     <None Include="res\VoxelGame.rc2">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="packages.config" />
+    <None Include="..\shaders\ray_casting.fs">
+      <Filter>Shaders Files</Filter>
+    </None>
+    <None Include="..\shaders\ray_casting.vs">
+      <Filter>Shaders Files</Filter>
+    </None>
+    <None Include="..\shaders\texture_vr.fs">
+      <Filter>Shaders Files</Filter>
+    </None>
+    <None Include="..\shaders\texture_vr.vs">
+      <Filter>Shaders Files</Filter>
+    </None>
+    <None Include="..\.gitignore" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\VoxelGame.ico">
@@ -91,7 +111,11 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="glew32s.lib" />
-    <Library Include="glew32.lib" />
+    <Library Include="glew32s.lib">
+      <Filter>Lib Files</Filter>
+    </Library>
+    <Library Include="glew32.lib">
+      <Filter>Lib Files</Filter>
+    </Library>
   </ItemGroup>
 </Project>
