@@ -1,30 +1,8 @@
-
-
-#include "glew.h"
-#include <gl/GL.h>
-#include "math.h"
-
-
 #pragma once
 
-
-class CTexture
-{
-public:
-    CTexture();
-    virtual ~CTexture();
-    bool CreateFromFile(LPCTSTR lpDataFile_i, int nWidth_i, int nHeight_i, int nSlices_i);
-    bool CreateFromTest(int n, int nWidth_i, int nHeight_i, int nSlices_i);
-    // -------------- sobre el RAW
-    void Box(BYTE *buff, int x0, int y0, int z0, int x1, int y1, int z1);
-
-    // -------------- sobre el RGBA
-    void Box2(char *buff, int x0, int y0, int z0, int x1, int y1, int z1);
-    void Ellipsoid(char *buff, int x0, int y0, int z0, int x1, int y1, int z1);
-
-    int dx, dy, dz, id;
-};
-
+#include "Texture.h"
+#include "glew.h"
+#include "vec3.h"
 
 struct st_glyph
 {
@@ -33,12 +11,11 @@ struct st_glyph
     int nNumPoints;
 };
 
-
-class CRenderEngine
+class RenderEngine
 {
 public:
-    CRenderEngine(void);
-    virtual ~CRenderEngine(void);
+    RenderEngine(void);
+    virtual ~RenderEngine(void);
 
     bool Initialize(HDC hContext_i);
     void Resize(int nWidth_i, int nHeight_i);
@@ -58,7 +35,7 @@ public:
 
     HDC m_hDC;
     HGLRC m_hglContext;
-    CTexture tex;
+    Texture tex;
     float fps;
     float time;
     float elapsed_time;
@@ -80,16 +57,11 @@ public:
     GLint fbWidth;
     GLint fbHeight;
 
-
     GLhandleARB vs_main, fs_main, shader_prog;
     GLhandleARB vs2_main, fs2_main, shader_prog2;
 
     // fonts
     st_glyph glyphs[255];
-
-
 };
 
 extern char *textFileRead(char *fn);
-
-

@@ -1,6 +1,4 @@
-
 // ChildView.cpp : implementation of the CChildView class
-//
 
 #include "stdafx.h"
 #include "VoxelGame.h"
@@ -12,35 +10,30 @@
 #define new DEBUG_NEW
 #endif
 
-CRenderEngine escena;
+RenderEngine escena;
 
 // CChildView
-
 CChildView::CChildView()
 {
-    primera_vez = true;
-
+    this->primera_vez = true;
 }
 
 CChildView::~CChildView()
 {
     escena.Release();
-
 }
-
 
 BEGIN_MESSAGE_MAP(CChildView, CWnd)
     ON_WM_PAINT()
 END_MESSAGE_MAP()
 
-
-
 // CChildView message handlers
-
 BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs)
 {
     if (!CWnd::PreCreateWindow(cs))
+    {
         return FALSE;
+    }
 
     cs.dwExStyle |= WS_EX_CLIENTEDGE;
     cs.style &= ~WS_BORDER;
@@ -52,14 +45,19 @@ BOOL CChildView::PreCreateWindow(CREATESTRUCT& cs)
 
 void CChildView::OnPaint()
 {
-    CPaintDC dc(this); // device context for painting
+    // device context for painting
+    CPaintDC dc(this);
     if (primera_vez)
     {
         primera_vez = false;
         if (!escena.Initialize(dc.m_hDC))
+        {
             AfxMessageBox(_T("Error al iniciar opengl"), MB_ICONSTOP);
+        }
         else
+        {
             RenderLoop();
+        }
     }
 }
 
@@ -67,30 +65,37 @@ void CChildView::OnPaint()
 float clamp256(float x)
 {
     if (x < -128)
+    {
         x += 256;
+    }
     else
+    {
         if (x > 128)
+        {
             x -= 256;
+        }
+    }
+
     return x;
 }
 
 void CChildView::RenderLoop()
 {
-    BOOL seguir = TRUE;
-    float time = 0;
+    auto seguir = static_cast<BOOL>(TRUE);
+    auto time = 0.f;
 
     // Address of current frequency
     LARGE_INTEGER F, T0, T1;
     QueryPerformanceFrequency(&F);
     QueryPerformanceCounter(&T0);
 
-    int cant_frames = 0;
-    float frame_time = 0;
+    auto cant_frames = 0;
+    auto frame_time = 0.f;
 
     while (seguir)
     {
         QueryPerformanceCounter(&T1);
-        auto elapsed_time = (double)(T1.QuadPart - T0.QuadPart) / (double)F.QuadPart;
+        auto elapsed_time = static_cast<double>((T1.QuadPart - T0.QuadPart)) / static_cast<double>(F.QuadPart);
         T0 = T1;
         time += static_cast<float>(elapsed_time);
         frame_time += static_cast<float>(elapsed_time);
@@ -103,8 +108,8 @@ void CChildView::RenderLoop()
             cant_frames = 0;
         }
 
-        float vel_rot = static_cast<float>(elapsed_time*1.5);
-        vec3 cero = vec3(0, 0, 0);
+        auto vel_rot = static_cast<float>(elapsed_time*1.5);
+        auto cero = vec3(0, 0, 0);
         if (GetAsyncKeyState(VK_RIGHT))
         {
             escena.viewDir.rotar(cero, escena.U, -vel_rot);
@@ -129,14 +134,21 @@ void CChildView::RenderLoop()
             escena.U.rotar(cero, escena.V, -vel_rot);
         }
 
-        if (GetAsyncKeyState(VK_ADD))
+        if (GetAsyncKeyState(VK_ADD)) {
             escena.filtro = 1;
-        if (GetAsyncKeyState(VK_SUBTRACT))
+        }
+
+        if (GetAsyncKeyState(VK_SUBTRACT)) {
             escena.filtro = 0;
-        if (GetAsyncKeyState('W'))
+        }
+
+        if (GetAsyncKeyState('W')) {
             escena.lookFrom = escena.lookFrom + escena.viewDir*(static_cast<float>(elapsed_time)*escena.vel_tras);
-        if (GetAsyncKeyState('Z'))
+        }
+
+        if (GetAsyncKeyState('S')) {
             escena.lookFrom = escena.lookFrom - escena.viewDir*(static_cast<float>(elapsed_time)*escena.vel_tras);
+        }
 
         escena.lookFrom.x = clamp256(static_cast<float>(escena.lookFrom.x));
         escena.lookFrom.y = clamp256(static_cast<float>(escena.lookFrom.y));
@@ -162,7 +174,8 @@ void CChildView::RenderLoop()
             switch (Msg.message)
             {
             case WM_KEYDOWN:
-                switch ((int)Msg.wParam)        // virtual-key code 
+                // virtual-key code 
+                switch ((int)Msg.wParam)
                 {
                 case VK_NEXT:
                     break;
@@ -172,6 +185,7 @@ void CChildView::RenderLoop()
                     seguir = FALSE;
                     break;
                 }
+
                 break;
             }
         }

@@ -1,28 +1,20 @@
-
 // VoxelGame.cpp : Defines the class behaviors for the application.
-//
 
 #include "stdafx.h"
-#include "afxwinappex.h"
-#include "afxdialogex.h"
 #include "VoxelGame.h"
+#include "CAboutDlg.h"
 #include "MainFrm.h"
-
+#include "Resource.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
-
-// CVoxelGameApp
-
 BEGIN_MESSAGE_MAP(CVoxelGameApp, CWinApp)
     ON_COMMAND(ID_APP_ABOUT, &CVoxelGameApp::OnAppAbout)
 END_MESSAGE_MAP()
 
-
 // CVoxelGameApp construction
-
 CVoxelGameApp::CVoxelGameApp()
 {
     // TODO: replace application ID string below with unique ID string; recommended
@@ -34,17 +26,12 @@ CVoxelGameApp::CVoxelGameApp()
 }
 
 // The one and only CVoxelGameApp object
-
 CVoxelGameApp theApp;
 
-
 // CVoxelGameApp initialization
-
 BOOL CVoxelGameApp::InitInstance()
 {
     CWinApp::InitInstance();
-
-
     EnableTaskbarInteraction(FALSE);
 
     // AfxInitRichEdit2() is required to use RichEdit control    
@@ -59,21 +46,20 @@ BOOL CVoxelGameApp::InitInstance()
     // such as the name of your company or organization
     SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 
-
     // To create the main window, this code creates a new frame window
     // object and then sets it as the application's main window object
     CMainFrame* pFrame = new CMainFrame;
     if (!pFrame)
+    {
         return FALSE;
+    }
+
     m_pMainWnd = pFrame;
-    // create and load the frame with its resources
+
+    // Create and load the frame with its resources
     pFrame->LoadFrame(IDR_MAINFRAME,
         WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, NULL,
         NULL);
-
-
-
-
 
     // The one and only window has been initialized, so show and update it
     pFrame->ShowWindow(SW_SHOWMAXIMIZED);
@@ -87,49 +73,9 @@ int CVoxelGameApp::ExitInstance()
     return CWinApp::ExitInstance();
 }
 
-// CVoxelGameApp message handlers
-
-
-// CAboutDlg dialog used for App About
-
-class CAboutDlg : public CDialogEx
-{
-public:
-    CAboutDlg();
-
-// Dialog Data
-#ifdef AFX_DESIGN_TIME
-    enum { IDD = IDD_ABOUTBOX };
-#endif
-
-protected:
-    virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-
-// Implementation
-protected:
-    DECLARE_MESSAGE_MAP()
-};
-
-CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX)
-{
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange* pDX)
-{
-    CDialogEx::DoDataExchange(pDX);
-}
-
-BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
-END_MESSAGE_MAP()
-
 // App command to run the dialog
 void CVoxelGameApp::OnAppAbout()
 {
     CAboutDlg aboutDlg;
     aboutDlg.DoModal();
 }
-
-// CVoxelGameApp message handlers
-
-
-

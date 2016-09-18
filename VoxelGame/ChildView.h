@@ -1,39 +1,19 @@
-
-// ChildView.h : interface of the CChildView class
-//
-
-
 #pragma once
 
-
+// ChildView.h : interface of the CChildView class
 // CChildView window
-
 class CChildView : public CWnd
 {
-// Construction
 public:
+    // Construction
     CChildView();
-
-// Attributes
-public:
-
-// Operations
-public:
+    virtual ~CChildView();
     bool primera_vez;
 
-// Overrides
-    protected:
-    virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-
-// Implementation
-public:
-    virtual ~CChildView();
-
-    // Generated message map functions
 protected:
+    // Overrides
+    virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
     afx_msg void OnPaint();
     void RenderLoop();
-
     DECLARE_MESSAGE_MAP()
 };
-

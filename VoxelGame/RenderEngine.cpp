@@ -1,11 +1,12 @@
 #include "StdAfx.h"
 #include "RenderEngine.h"
-#include <math.h>
+#include "mat4.h"
+#include "math.h"
 
 #pragma comment ( lib, "OpenGL32.lib" )
 #pragma comment ( lib, "glew32.lib" )
 
-CRenderEngine::CRenderEngine()
+RenderEngine::RenderEngine()
 {
     game_status = 0;
     fps = 0;
@@ -25,13 +26,11 @@ CRenderEngine::CRenderEngine()
     filtro = 0;
 }
 
-
-CRenderEngine::~CRenderEngine(void)
+RenderEngine::~RenderEngine(void)
 {
 }
 
-
-bool CRenderEngine::Initialize(HDC hContext_i)
+bool RenderEngine::Initialize(HDC hContext_i)
 {
     m_hDC = hContext_i;
     //Setting up the dialog to support the OpenGL.
@@ -112,7 +111,7 @@ bool CRenderEngine::Initialize(HDC hContext_i)
     return true;
 }
 
-void CRenderEngine::initFonts()
+void RenderEngine::initFonts()
 {
     CDC *pDC = CDC::FromHandle(m_hDC);
     CFont hfont, *hfontOld;
@@ -140,12 +139,11 @@ void CRenderEngine::initFonts()
         }
 
     }
-    pDC->SelectObject(hfontOld);
 
+    pDC->SelectObject(hfontOld);
 }
 
-
-void CRenderEngine::Resize(int nWidth_i, int nHeight_i)
+void RenderEngine::Resize(int nWidth_i, int nHeight_i)
 {
     GLdouble AspectRatio = (GLdouble)(nWidth_i) / (GLdouble)(nHeight_i);
     glViewport(0, 0, nWidth_i, nHeight_i);
@@ -165,7 +163,7 @@ void CRenderEngine::Resize(int nWidth_i, int nHeight_i)
     glLoadIdentity();
 }
 
-void CRenderEngine::Render()
+void RenderEngine::Render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -180,12 +178,10 @@ void CRenderEngine::Render()
     }
 
     SwapBuffers(m_hDC);
-
-
 }
 
-// VERSION CON RAYCASTING
-void CRenderEngine::RayCasting()
+// Version con RayCasting
+void RenderEngine::RayCasting()
 {
     float fov = M_PI / 4.0f;
     float DX = static_cast<float>(fbWidth);
@@ -194,7 +190,7 @@ void CRenderEngine::RayCasting()
     vec3 Dy = U * (k*DY / DX);
     vec3 Dx = V * k;
 
-    // direccion de cada rayo
+    // Direccion de cada rayo
     // D = N + Dy*y + Dx*x;
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
@@ -346,7 +342,7 @@ void CRenderEngine::RayCasting()
     }
 }
 
-void CRenderEngine::TextureVR()
+void RenderEngine::TextureVR()
 {
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.05f);
@@ -416,226 +412,13 @@ void CRenderEngine::TextureVR()
     renderText(10,10,saux);*/
 }
 
-void CRenderEngine::Release()
+void RenderEngine::Release()
 {
     //TODO:
     // falta liberar todo....    
 }
 
-CTexture::CTexture()
-{
-    dx = dy = dz = 0;
-    id = 0;
-}
-
-CTexture::~CTexture(void)
-{
-    if (0 != id)
-    {
-        glDeleteTextures(1, (GLuint*)&id);
-    }
-}
-
-bool CTexture::CreateFromFile(LPCTSTR lpDataFile_i, int nWidth_i, int nHeight_i, int nSlices_i)
-{
-    CFile Medfile;
-    if (!Medfile.Open(lpDataFile_i, CFile::modeRead))
-    {
-        return false;
-    }
-
-    dx = nWidth_i;
-    dy = nHeight_i;
-    dz = nSlices_i;
-
-    int size = dx*dy*dz;
-    BYTE * chBuffer = new BYTE[2 * size];
-    if (!chBuffer)
-    {
-        return false;
-    }
-
-    char* pRGBABuffer = new char[size * 4];
-    if (!pRGBABuffer)
-    {
-        return false;
-    }
-
-    memset(chBuffer, 0, size);
-    Medfile.Read(chBuffer, size);
-
-    for (int nIndx = 0; nIndx < size; ++nIndx)
-    {
-        pRGBABuffer[nIndx * 4] = chBuffer[nIndx];
-        pRGBABuffer[nIndx * 4 + 1] = chBuffer[nIndx];
-        pRGBABuffer[nIndx * 4 + 2] = chBuffer[nIndx];
-        pRGBABuffer[nIndx * 4 + 3] = chBuffer[nIndx];
-    }
-
-    // experimento, le pongo una caja roja
-    for (int i = 0; i < 20; ++i)
-    {
-        int r = 8;
-        int x = static_cast<int>((float)rand() / (float)RAND_MAX*200.0f + 20);
-        int y = static_cast<int>((float)rand() / (float)RAND_MAX*200.0f + 20);
-        int z = static_cast<int>((float)rand() / (float)RAND_MAX*200.0f + 20);
-        Ellipsoid(pRGBABuffer, x - r, y - r, z - r, x + r, y + r, z + r);
-    }
-
-    if (0 != id)
-    {
-        glDeleteTextures(1, (GLuint*)&id);
-    }
-
-    glGenTextures(1, (GLuint*)&id);
-
-    glBindTexture(GL_TEXTURE_3D, id);
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-    //GL_UNSIGNED_SHORT_4_4_4_4
-    //GL_UNSIGNED_BYTE
-    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA4, dx, dy, dz, 0, GL_RGBA, GL_UNSIGNED_BYTE, pRGBABuffer);
-    glBindTexture(GL_TEXTURE_3D, 0);
-
-    delete[] chBuffer;
-    delete[] pRGBABuffer;
-    return true;
-}
-
-void CTexture::Box2(char *buff, int x0, int y0, int z0, int x1, int y1, int z1)
-{
-    x0 = clamp(x0, 0, 255);
-    y0 = clamp(y0, 0, 255);
-    z0 = clamp(z0, 0, 255);
-    x1 = clamp(x1, 0, 255);
-    y1 = clamp(y1, 0, 255);
-    z1 = clamp(z1, 0, 255);
-
-    for (int x = x0; x < x1; ++x)
-        for (int y = y0; y < y1; ++y)
-            for (int z = z0; z < z1; ++z)
-            {
-                buff[(z*dx*dy + y*dx + x) * 4] = (char)255;
-                buff[(z*dx*dy + y*dx + x) * 4 + 1] = 0;
-                buff[(z*dx*dy + y*dx + x) * 4 + 2] = 0;
-            }
-}
-
-void CTexture::Ellipsoid(char *buff, int x0, int y0, int z0, int x1, int y1, int z1)
-{
-    x0 = clamp(x0, 0, 255);
-    y0 = clamp(y0, 0, 255);
-    z0 = clamp(z0, 0, 255);
-    x1 = clamp(x1, 0, 255);
-    y1 = clamp(y1, 0, 255);
-    z1 = clamp(z1, 0, 255);
-
-    int cx = (x1 + x0) / 2;
-    int cy = (y1 + y0) / 2;
-    int cz = (z1 + z0) / 2;
-
-    int rx = (x1 - x0) / 2;
-    int ry = (y1 - y0) / 2;
-    int rz = (z1 - z0) / 2;
-
-    float rx2 = static_cast<float>(rx*rx);
-    float ry2 = static_cast<float>(ry*ry);
-    float rz2 = static_cast<float>(rz*rz);
-
-    for (int x = x0; x < x1; ++x)
-        for (int y = y0; y < y1; ++y)
-            for (int z = z0; z < z1; ++z)
-            {
-                float sx = (float)(x - cx);
-                float sy = (float)(y - cy);
-                float sz = (float)(z - cz);
-
-                float tx = sx*sx / rx2;
-                float ty = sy*sy / ry2;
-                float tz = sz*sz / rz2;
-
-                float k = tx + ty + tz;
-                if (k <= 1)
-                {
-                    int ndx = (z*dx*dy + y*dx + x) * 4;
-                    //buff[ndx] = clamp ( buff[ndx] + 255*(1-k) , 0, 255);
-                    buff[ndx] = (char)255;
-                }
-            }
-}
-
-void CTexture::Box(BYTE *buff, int x0, int y0, int z0, int x1, int y1, int z1)
-{
-
-    for (int x = x0; x < x1; ++x)
-        for (int y = y0; y < y1; ++y)
-            for (int z = z0; z < z1; ++z)
-            {
-                buff[z*dx*dy + y*dx + x] = 255;
-            }
-}
-
-bool CTexture::CreateFromTest(int n, int nWidth_i, int nHeight_i, int nSlices_i)
-{
-    dx = nWidth_i;
-    dy = nHeight_i;
-    dz = nSlices_i;
-
-    int size = dx*dy*dz;
-    BYTE * chBuffer = new BYTE[size];
-    if (!chBuffer)
-    {
-        return false;
-    }
-    char* pRGBABuffer = new char[size * 4];
-    if (!pRGBABuffer)
-    {
-        return false;
-    }
-    memset(chBuffer, 0, size);
-
-    // creo una caja
-    if (n == 0)
-    {
-        Box(chBuffer, 0, 0, 0, dx, dy, 10);
-        Box(chBuffer, 0, 0, dz - 10, dx, dy, dz);
-    }
-    else
-    {
-        Box(chBuffer, dx / 2 - 10, dy / 2 - 10, dz / 2 - 10, dx / 2 + 10, dy / 2 + 10, dz / 2 + 10);
-    }
-    for (int nIndx = 0; nIndx < size; ++nIndx)
-    {
-        pRGBABuffer[nIndx * 4] = chBuffer[nIndx];
-        pRGBABuffer[nIndx * 4 + 1] = chBuffer[nIndx];
-        pRGBABuffer[nIndx * 4 + 2] = chBuffer[nIndx];
-        pRGBABuffer[nIndx * 4 + 3] = chBuffer[nIndx];
-    }
-
-    if (0 != id)
-    {
-        glDeleteTextures(1, (GLuint*)&id);
-    }
-
-    glGenTextures(1, (GLuint*)&id);
-
-    glBindTexture(GL_TEXTURE_3D, id);
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, dx, dy, dz, 0, GL_RGBA, GL_UNSIGNED_BYTE, pRGBABuffer);
-    glBindTexture(GL_TEXTURE_3D, 0);
-
-    delete[] chBuffer;
-    delete[] pRGBABuffer;
-    return true;
-}
-
-void CRenderEngine::renderHUD()
+void RenderEngine::renderHUD()
 {
     int px = fbWidth / 2;
     int py = fbHeight / 2;
@@ -692,7 +475,7 @@ void CRenderEngine::renderHUD()
     }
 }
 
-void CRenderEngine::renderCircle(int px, int py, int r)
+void RenderEngine::renderCircle(int px, int py, int r)
 {
     float x0 = 2 * px / (float)fbWidth - 1;
     float y0 = 1 - 2 * py / (float)fbHeight;
@@ -710,7 +493,7 @@ void CRenderEngine::renderCircle(int px, int py, int r)
     glEnd();
 }
 
-void CRenderEngine::renderRect(int px0, int py0, int dx, int dy)
+void RenderEngine::renderRect(int px0, int py0, int dx, int dy)
 {
     float x0 = 2 * px0 / (float)fbWidth - 1;
     float y0 = 1 - 2 * py0 / (float)fbHeight;
@@ -725,7 +508,7 @@ void CRenderEngine::renderRect(int px0, int py0, int dx, int dy)
     glEnd();
 }
 
-void CRenderEngine::renderText(int px, int py, char *text)
+void RenderEngine::renderText(int px, int py, char *text)
 {
     glLineWidth(6);
     glColor4f(0.2f, 1.0f, 0.2f, 0.5f);
@@ -736,7 +519,7 @@ void CRenderEngine::renderText(int px, int py, char *text)
     renderText(0.0017f, px, py, text);
 }
 
-void CRenderEngine::renderText(float K, int px, int py, char *text)
+void RenderEngine::renderText(float K, int px, int py, char *text)
 {
     float x0 = 2 * px / (float)fbWidth - 1;
     float y0 = 1 - 2 * py / (float)fbHeight;
@@ -789,7 +572,7 @@ void CRenderEngine::renderText(float K, int px, int py, char *text)
     glEnd();
 }
 
-void CRenderEngine::loadShaders(char *vs, char *fs, GLhandleARB *vs_main, GLhandleARB *fs_main, GLhandleARB *shader_prog)
+void RenderEngine::loadShaders(char *vs, char *fs, GLhandleARB *vs_main, GLhandleARB *fs_main, GLhandleARB *shader_prog)
 {
 
     *vs_main = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
@@ -839,7 +622,7 @@ void CRenderEngine::loadShaders(char *vs, char *fs, GLhandleARB *vs_main, GLhand
     glLinkProgramARB(*shader_prog);
 }
 
-void CRenderEngine::setShaders()
+void RenderEngine::setShaders()
 {
     char *vs, *fs;
 
