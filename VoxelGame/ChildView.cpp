@@ -110,13 +110,13 @@ void CChildView::RenderLoop()
 
         auto vel_rot = static_cast<float>(elapsed_time*1.5);
         auto cero = vec3(0, 0, 0);
-        if (GetAsyncKeyState(VK_RIGHT))
+        if (GetAsyncKeyState('D'))
         {
             escena.viewDir.rotar(cero, escena.U, -vel_rot);
             escena.V.rotar(cero, escena.U, -vel_rot);
         }
 
-        if (GetAsyncKeyState(VK_LEFT))
+        if (GetAsyncKeyState('A'))
         {
             escena.viewDir.rotar(cero, escena.U, vel_rot);
             escena.V.rotar(cero, escena.U, vel_rot);

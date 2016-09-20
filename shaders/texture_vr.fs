@@ -3,8 +3,7 @@ uniform vec3 pos;
 uniform vec3 iViewDir;
 varying vec3 vTexCoord;
 
-
-// transfer function
+// Transfer function
 vec4 transfer(float I)
 {
     vec4 clr;

@@ -9,7 +9,7 @@
 class math
 {
 public:
-    bool intersect(vec3 orig, vec3 dir, vec3 center, float radio);
-    void swap(float *a, float *b);
+    auto intersect(vec3 orig, vec3 dir, vec3 center, float radio);
+    auto swap(float *a, float *b);
     int clamp(int x, int a, int b);
 };

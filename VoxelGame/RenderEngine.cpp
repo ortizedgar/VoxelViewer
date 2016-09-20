@@ -3,6 +3,8 @@
 #include "mat4.h"
 #include "math.h"
 
+#include <memory>
+
 #pragma comment ( lib, "OpenGL32.lib" )
 #pragma comment ( lib, "glew32.lib" )
 
@@ -14,7 +16,6 @@ RenderEngine::RenderEngine()
     viewDir = vec3(1, 0, 0);
     U = vec3(0, 1, 0);
     V = vec3(0, 0, 1);
-
     voxel_step0 = 5.0;
     timer_catch = 0;
     voxel_step = 0.5;
@@ -22,17 +23,17 @@ RenderEngine::RenderEngine()
     vel_tras = 20;
     lookFrom = vec3(-80, 0, 0);
     //lookFrom = vec3(-30,10,40);
-
     filtro = 0;
 }
 
-RenderEngine::~RenderEngine(void)
+RenderEngine::~RenderEngine()
 {
 }
 
 bool RenderEngine::Initialize(HDC hContext_i)
 {
     m_hDC = hContext_i;
+
     //Setting up the dialog to support the OpenGL.
     PIXELFORMATDESCRIPTOR stPixelFormatDescriptor;
     memset(&stPixelFormatDescriptor, 0, sizeof(PIXELFORMATDESCRIPTOR));
@@ -52,21 +53,22 @@ bool RenderEngine::Initialize(HDC hContext_i)
         return false;
     }
 
-    //Set the pixel format 
+    // Set the pixel format 
     if (!SetPixelFormat(hContext_i, nPixelFormat, &stPixelFormatDescriptor))
     {
         AfxMessageBox(_T("Error while setting pixel format"));
         return false;
     }
 
-    //Create a device context.
+    // Create a device context
     m_hglContext = wglCreateContext(hContext_i);
     if (!m_hglContext)
     {
         AfxMessageBox(_T("Rendering Context Creation Failed"));
         return false;
     }
-    //Make the created device context as the current device context.
+
+    // Make the created device context as the current device context.
     BOOL bResult = wglMakeCurrent(hContext_i, m_hglContext);
     if (!bResult)
     {
@@ -76,7 +78,7 @@ bool RenderEngine::Initialize(HDC hContext_i)
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    // inicializa las texturas 3d, para eso uso el wrapper de opengl glew
+    // Inicializa las texturas 3d, para eso uso el wrapper de Opengl glew
     glewInit();
     if (GL_TRUE != glewGetExtension("GL_EXT_texture3D"))
     {
@@ -84,10 +86,10 @@ bool RenderEngine::Initialize(HDC hContext_i)
         return false;
     }
 
-    // pongo los shaders
+    // Pongo los shaders
     setShaders();
 
-    // inicio el sistema de fonts simples
+    // Inicio el sistema de fonts simples
     initFonts();
 
     if (!tex.CreateFromFile(_T("../media/mri-head.raw"), 256, 256, 256))
@@ -100,8 +102,6 @@ bool RenderEngine::Initialize(HDC hContext_i)
     {
         AfxMessageBox( _T( "Failed to read the data" ));
     }*/
-
-
 
     GLint dims[4] = { 0 };
     glGetIntegerv(GL_VIEWPORT, dims);
@@ -121,7 +121,6 @@ void RenderEngine::initFonts()
 
     for (int i = 0; i < 255; ++i)
     {
-
         char s[1];
         s[0] = i;
         pDC->SetBkMode(TRANSPARENT);
@@ -167,7 +166,7 @@ void RenderEngine::Render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if (tex.id == 0)
+    if (tex.id() == 0)
     {
         renderText(10, 510, "sin archivo cargado");
     }
@@ -209,7 +208,7 @@ void RenderEngine::RayCasting()
     glUniform1i(glGetUniformLocation(shader_prog, "filter"), filtro);
 
     glActiveTexture(GL_TEXTURE);
-    glBindTexture(GL_TEXTURE_3D, tex.id);
+    glBindTexture(GL_TEXTURE_3D, tex.id());
 
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -286,7 +285,6 @@ void RenderEngine::RayCasting()
                 mb += array[3 * i + 2];
             }
 
-
             mr /= cant;
             mg /= cant;
             mb /= cant;
@@ -325,20 +323,19 @@ void RenderEngine::RayCasting()
     }
 
     // Bisturi
-    if (GetAsyncKeyState(VK_LBUTTON))
+    if (GetAsyncKeyState(VK_SPACE))
     {
         vec3 pos = lookFrom + viewDir*voxel_step0;
         int tx = static_cast<int>(pos.x + 128);
         int ty = static_cast<int>(pos.z + 128);
         int tz = static_cast<int>(pos.y + 128);
-        glBindTexture(GL_TEXTURE_3D, tex.id);
+        glBindTexture(GL_TEXTURE_3D, tex.id());
         int r = 8;
         int size = 4 * r*r*r;
         char *RGBABuffer = new char[size];
         memset(RGBABuffer, 0, size);
         glTexSubImage3D(GL_TEXTURE_3D, 0, tx - r / 2, ty - r / 2, tz - r / 2, r, r, r, GL_RGBA, GL_UNSIGNED_BYTE, RGBABuffer);
-        delete[]RGBABuffer;
-        // test de commit
+        delete[] RGBABuffer;
     }
 }
 
@@ -356,12 +353,12 @@ void RenderEngine::TextureVR()
     // escalo y roto con respecto al centro del cubo 
     glTranslatef(0.5f, 0.5f, 0.5f);
     float E = 1;
-    glScaled(E, 1.0f*(float)tex.dx / (float)tex.dy*E, (float)tex.dx / (float)tex.dz*E);
+    glScaled(E, 1.0f*(float)tex.dx() / (float)tex.dy()*E, (float)tex.dx() / (float)tex.dz()*E);
     //mat4 transform = mat4::RotateX(an_x) * mat4::RotateY(an_y) * mat4::RotateZ(an_z);
     //mat4 transform = mat4::fromBase(viewDir , U,V);
     float t = time*0.1f;
     mat4 transform = mat4::RotateX(t) * mat4::RotateY(t) * mat4::RotateZ(t);
-    glMultMatrixd((const double *)transform.m);
+    glMultMatrixd((const double *)transform.m());
     glTranslatef(-0.5f, -0.5f, -0.5f);
 
     glEnable(GL_TEXTURE_3D);
@@ -372,7 +369,7 @@ void RenderEngine::TextureVR()
     glUniform3f(glGetUniformLocation(shader_prog2, "iViewDir"), static_cast<float>(viewDir.x), static_cast<float>(viewDir.y), static_cast<float>(viewDir.z));
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_3D, tex.id);
+    glBindTexture(GL_TEXTURE_3D, tex.id());
 
     GLint texLoc = glGetUniformLocation(shader_prog2, "s_texture0");
     glUniform1i(texLoc, 0);
@@ -574,7 +571,6 @@ void RenderEngine::renderText(float K, int px, int py, char *text)
 
 void RenderEngine::loadShaders(char *vs, char *fs, GLhandleARB *vs_main, GLhandleARB *fs_main, GLhandleARB *shader_prog)
 {
-
     *vs_main = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
     *fs_main = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
     const char * vv = vs;
@@ -583,36 +579,11 @@ void RenderEngine::loadShaders(char *vs, char *fs, GLhandleARB *vs_main, GLhandl
     glShaderSourceARB(*vs_main, 1, &vv, NULL);
     glShaderSourceARB(*fs_main, 1, &ff, NULL);
 
-
     glCompileShaderARB(*vs_main);
     glCompileShaderARB(*fs_main);
 
-    GLint status;
-    glGetObjectParameterivARB(*vs_main, GL_OBJECT_COMPILE_STATUS_ARB, &status);
-    if (!status)
-    {
-        GLint maxLength = 0;
-        glGetShaderiv(*vs_main, GL_INFO_LOG_LENGTH, &maxLength);
-        GLchar *errorLog = new GLchar[maxLength];
-        glGetShaderInfoLog(*vs_main, maxLength, &maxLength, errorLog);
-        AfxMessageBox(CString(errorLog));
-        glDeleteShader(*vs_main);
-        delete[] errorLog;
-        exit(0);
-    }
-
-    glGetObjectParameterivARB(*fs_main, GL_OBJECT_COMPILE_STATUS_ARB, &status);
-    if (!status)
-    {
-        GLint maxLength = 0;
-        glGetShaderiv(*fs_main, GL_INFO_LOG_LENGTH, &maxLength);
-        GLchar *errorLog = new GLchar[maxLength];
-        glGetShaderInfoLog(*fs_main, maxLength, &maxLength, errorLog);
-        AfxMessageBox(CString(errorLog));
-        glDeleteShader(*fs_main);
-        delete[] errorLog;
-        exit(0);
-    }
+    this->CheckCompilationStatus(vs_main);
+    this->CheckCompilationStatus(fs_main);
 
     *shader_prog = glCreateProgramObjectARB();
 
@@ -622,26 +593,43 @@ void RenderEngine::loadShaders(char *vs, char *fs, GLhandleARB *vs_main, GLhandl
     glLinkProgramARB(*shader_prog);
 }
 
+void RenderEngine::CheckCompilationStatus(GLhandleARB * vs_main)
+{
+    GLint status;
+    glGetObjectParameterivARB(*vs_main, GL_OBJECT_COMPILE_STATUS_ARB, &status);
+    if (!status)
+    {
+        GLint maxLength = 0;
+        glGetShaderiv(*vs_main, GL_INFO_LOG_LENGTH, &maxLength);
+        auto errorLog = new GLchar[maxLength];
+        glGetShaderInfoLog(*vs_main, maxLength, &maxLength, errorLog);
+        AfxMessageBox(CString(errorLog));
+        glDeleteShader(*vs_main);
+        delete[] errorLog;
+        exit(0);
+    }
+}
+
 void RenderEngine::setShaders()
 {
     char *vs, *fs;
 
-    // shaders ray casting
-    vs = textFileRead("../shaders/ray_casting.vs");
-    fs = textFileRead("../shaders/ray_casting.fs");
+    // Shaders ray casting
+    vs = this->textFileRead("../shaders/ray_casting.vs");
+    fs = this->textFileRead("../shaders/ray_casting.fs");
     loadShaders(vs, fs, &vs_main, &fs_main, &shader_prog);
     free(vs);
     free(fs);
 
-    // shaders texture volumen
-    vs = textFileRead("../shaders/texture_vr.vs");
-    fs = textFileRead("../shaders/texture_vr.fs");
+    // Shaders texture volumen
+    vs = this->textFileRead("../shaders/texture_vr.vs");
+    fs = this->textFileRead("../shaders/texture_vr.fs");
     loadShaders(vs, fs, &vs2_main, &fs2_main, &shader_prog2);
     free(vs);
     free(fs);
 }
 
-char *textFileRead(char *fn)
+char *RenderEngine::textFileRead(char *fn)
 {
     FILE *fp;
     char *content = NULL;

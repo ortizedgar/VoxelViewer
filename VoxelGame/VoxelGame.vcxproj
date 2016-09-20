@@ -201,10 +201,13 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\GL\GL.h" />
+    <ClInclude Include="..\GL\glew.h" />
+    <ClInclude Include="..\GL\GLU.h" />
+    <ClInclude Include="..\GL\glxew.h" />
+    <ClInclude Include="..\GL\wglew.h" />
     <ClInclude Include="CAboutDlg.h" />
     <ClInclude Include="ChildView.h" />
-    <ClInclude Include="glew.h" />
-    <ClInclude Include="glxew.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="mat4.h" />
     <ClInclude Include="math.h" />
@@ -216,7 +219,6 @@
     <ClInclude Include="vec3.h" />
     <ClInclude Include="vec4.h" />
     <ClInclude Include="VoxelGame.h" />
-    <ClInclude Include="wglew.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CAboutDlg.cpp" />

@@ -1,8 +1,8 @@
 #include "StdAfx.h"
-#include "vec3.h"
 #include "math.h"
+#include "vec3.h"
 
-void math::swap(float *a, float *b)
+auto math::swap(float *a, float *b)
 {
     auto c = *a;
     *a = *b;
@@ -10,7 +10,7 @@ void math::swap(float *a, float *b)
 }
 
 // Helper interseccion rayo - esfera
-bool math::intersect(vec3 orig, vec3 dir, vec3 center, float radio)
+auto math::intersect(vec3 orig, vec3 dir, vec3 center, float radio)
 {
     auto *vec3Aux = new vec3;
     auto L = orig - center;
@@ -23,7 +23,7 @@ bool math::intersect(vec3 orig, vec3 dir, vec3 center, float radio)
         auto t1 = (-B + static_cast<float>(sqrt(disc))) / 2;
         if (t0 > t1)
         {
-            swap(&t0, &t1);
+            this->swap(&t0, &t1);
         }
 
         // t0 < t1 

@@ -9,43 +9,37 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
+    <Filter Include="Header Files\Glew Header Files">
+      <UniqueIdentifier>{2543a197-e2a4-488b-9e2f-3eb61392e682}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\MCF Header Files">
+      <UniqueIdentifier>{0b1f4602-2467-4709-a17f-5c029f8c93db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Misc Header Files">
+      <UniqueIdentifier>{1dae4d55-62a9-45a2-9d13-aca28a14f432}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MCF Source Files">
+      <UniqueIdentifier>{05ab2406-2d7e-4356-aad8-b2104b825c3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Misc Files">
+      <UniqueIdentifier>{c083785f-320f-40aa-a30a-b0bb72d279cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Misc Files\Lib Files">
+      <UniqueIdentifier>{8563e0a5-3445-42ee-9cdc-df0868255e4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Misc Files\Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Shaders Files">
+    <Filter Include="Source Files\Shaders Files">
       <UniqueIdentifier>{186c6550-e779-4865-ab53-1962052160be}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Lib Files">
-      <UniqueIdentifier>{8563e0a5-3445-42ee-9cdc-df0868255e4d}</UniqueIdentifier>
+    <Filter Include="Source Files\Misc Source Files">
+      <UniqueIdentifier>{33ae6998-3b85-49b1-93af-0bf5fa022650}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VoxelGame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MainFrm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ChildView.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="glew.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="glxew.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="math.h">
@@ -66,24 +60,42 @@
     <ClInclude Include="Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CAboutDlg.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\GL\GL.h">
+      <Filter>Header Files\Glew Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="wglew.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\GL\glew.h">
+      <Filter>Header Files\Glew Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GL\GLU.h">
+      <Filter>Header Files\Glew Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GL\glxew.h">
+      <Filter>Header Files\Glew Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GL\wglew.h">
+      <Filter>Header Files\Glew Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files\Misc Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CAboutDlg.h">
+      <Filter>Header Files\MCF Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChildView.h">
+      <Filter>Header Files\MCF Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MainFrm.h">
+      <Filter>Header Files\MCF Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files\MCF Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files\Misc Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VoxelGame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MainFrm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ChildView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="math.cpp">
@@ -105,47 +117,65 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CAboutDlg.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\MCF Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ChildView.cpp">
+      <Filter>Source Files\MCF Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MainFrm.cpp">
+      <Filter>Source Files\MCF Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files\Misc Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="VoxelGame.rc">
-      <Filter>Resource Files</Filter>
+      <Filter>Misc Files\Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\VoxelGame.rc2">
-      <Filter>Resource Files</Filter>
+      <Filter>Misc Files\Resource Files</Filter>
     </None>
-    <None Include="packages.config" />
     <None Include="..\shaders\ray_casting.fs">
-      <Filter>Shaders Files</Filter>
+      <Filter>Source Files\Shaders Files</Filter>
     </None>
     <None Include="..\shaders\ray_casting.vs">
-      <Filter>Shaders Files</Filter>
+      <Filter>Source Files\Shaders Files</Filter>
     </None>
     <None Include="..\shaders\texture_vr.fs">
-      <Filter>Shaders Files</Filter>
+      <Filter>Source Files\Shaders Files</Filter>
     </None>
     <None Include="..\shaders\texture_vr.vs">
-      <Filter>Shaders Files</Filter>
+      <Filter>Source Files\Shaders Files</Filter>
     </None>
-    <None Include="..\.gitignore" />
+    <None Include="..\.gitignore">
+      <Filter>Misc Files</Filter>
+    </None>
+    <None Include="packages.config">
+      <Filter>Misc Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\VoxelGame.ico">
-      <Filter>Resource Files</Filter>
+      <Filter>Misc Files\Resource Files</Filter>
     </Image>
     <Image Include="res\Toolbar.bmp">
-      <Filter>Resource Files</Filter>
+      <Filter>Misc Files\Resource Files</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
     <Library Include="glew32s.lib">
-      <Filter>Lib Files</Filter>
+      <Filter>Misc Files\Lib Files</Filter>
     </Library>
     <Library Include="glew32.lib">
-      <Filter>Lib Files</Filter>
+      <Filter>Misc Files\Lib Files</Filter>
     </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt">
+      <Filter>Misc Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>
