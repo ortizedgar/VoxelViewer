@@ -3,13 +3,7 @@
 #include "Texture.h"
 #include "../GL/glew.h"
 #include "vec3.h"
-
-struct st_glyph
-{
-    POINT *lpPt;
-    BYTE  *lpB;
-    int nNumPoints;
-};
+#include "Glyph.h"
 
 class RenderEngine
 {
@@ -54,7 +48,7 @@ public:
     GLhandleARB vs2_main, fs2_main, shader_prog2;
 
     // Fonts
-    st_glyph glyphs[255];
+    Glyph glyphs[255];
 
 private:
     void CheckCompilationStatus(GLhandleARB * vs_main);

@@ -7,10 +7,10 @@
 
 // CVoxelGameApp:
 // See VoxelGame.cpp for the implementation of this class
-class CVoxelGameApp : public CWinApp
+class VoxelGame : public CWinApp
 {
 public:
-    CVoxelGameApp();
+    VoxelGame();
 
     // Overrides
     virtual BOOL InitInstance();
@@ -20,4 +20,4 @@ public:
     DECLARE_MESSAGE_MAP()
 };
 
-extern CVoxelGameApp theApp;
+extern VoxelGame theApp;

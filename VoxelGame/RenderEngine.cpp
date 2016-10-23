@@ -12,18 +12,16 @@ RenderEngine::RenderEngine()
 {
     game_status = 0;
     fps = 0;
-    lookFrom = vec3(-10, 0, 0);
     viewDir = vec3(1, 0, 0);
     U = vec3(0, 1, 0);
     V = vec3(0, 0, 1);
-    voxel_step0 = 5.0;
     timer_catch = 0;
     voxel_step = 0.5;
     voxel_step0 = 75.0;
     vel_tras = 20;
     lookFrom = vec3(-80, 0, 0);
-    //lookFrom = vec3(-30,10,40);
     filtro = 0;
+    cant_capturados = 0;
 }
 
 RenderEngine::~RenderEngine()
@@ -172,8 +170,8 @@ void RenderEngine::Render()
     }
     else
     {
-        RayCasting();
-        TextureVR();
+        this->RayCasting();
+        this->TextureVR();
     }
 
     SwapBuffers(m_hDC);
@@ -323,7 +321,7 @@ void RenderEngine::RayCasting()
     }
 
     // Bisturi
-    if (GetAsyncKeyState(VK_SPACE))
+    if (GetAsyncKeyState(VK_LBUTTON))
     {
         vec3 pos = lookFrom + viewDir*voxel_step0;
         int tx = static_cast<int>(pos.x + 128);
@@ -531,7 +529,7 @@ void RenderEngine::renderText(float K, int px, int py, char *text)
             continue;;
         }
 
-        st_glyph *G = &glyphs[j];
+        Glyph *G = &glyphs[j];
 
         float ant_x = 0, ant_y = 0;
         for (int i = 0; i < G->nNumPoints; i++)

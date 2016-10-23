@@ -1,14 +1,15 @@
 #pragma once
 
-// ChildView.h : interface of the CChildView class
-// CChildView window
-class CChildView : public CWnd
+#include "RenderEngine.h"
+
+// ChildView.h : interface of the ChildView class
+// ChildView window
+class ChildView : public CWnd
 {
 public:
     // Construction
-    CChildView();
-    virtual ~CChildView();
-    bool primera_vez;
+    ChildView();
+    virtual ~ChildView();
 
 protected:
     // Overrides
@@ -16,4 +17,14 @@ protected:
     afx_msg void OnPaint();
     void RenderLoop();
     DECLARE_MESSAGE_MAP()
+
+private:
+    LPPOINT oldCursorPosition;
+    LPPOINT newCursorPosition;
+    RenderEngine escena;
+    bool primera_vez;
+    int sensibilidad;
+    void MoveCameraWithMouse(vec3 &cero, long double &movimientoHorizontal, long double &movimientoVertical);
+    void MoveCameraWithKeyboard(double elapsed_time);
+    void SetFiltroWithKeyboard();
 };

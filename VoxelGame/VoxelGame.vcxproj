@@ -208,6 +208,7 @@
     <ClInclude Include="..\GL\wglew.h" />
     <ClInclude Include="CAboutDlg.h" />
     <ClInclude Include="ChildView.h" />
+    <ClInclude Include="Glyph.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="mat4.h" />
     <ClInclude Include="math.h" />
@@ -247,6 +248,7 @@
     <None Include="..\shaders\ray_casting.vs" />
     <None Include="..\shaders\texture_vr.fs" />
     <None Include="..\shaders\texture_vr.vs" />
+    <None Include="ClassDiagram.cd" />
     <None Include="packages.config" />
     <None Include="res\VoxelGame.rc2" />
   </ItemGroup>

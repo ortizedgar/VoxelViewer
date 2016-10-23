@@ -10,12 +10,12 @@
 #define new DEBUG_NEW
 #endif
 
-BEGIN_MESSAGE_MAP(CVoxelGameApp, CWinApp)
-    ON_COMMAND(ID_APP_ABOUT, &CVoxelGameApp::OnAppAbout)
+BEGIN_MESSAGE_MAP(VoxelGame, CWinApp)
+    ON_COMMAND(ID_APP_ABOUT, &VoxelGame::OnAppAbout)
 END_MESSAGE_MAP()
 
 // CVoxelGameApp construction
-CVoxelGameApp::CVoxelGameApp()
+VoxelGame::VoxelGame()
 {
     // TODO: replace application ID string below with unique ID string; recommended
     // format for string is CompanyName.ProductName.SubProduct.VersionInformation
@@ -26,10 +26,10 @@ CVoxelGameApp::CVoxelGameApp()
 }
 
 // The one and only CVoxelGameApp object
-CVoxelGameApp theApp;
+VoxelGame theApp;
 
 // CVoxelGameApp initialization
-BOOL CVoxelGameApp::InitInstance()
+BOOL VoxelGame::InitInstance()
 {
     CWinApp::InitInstance();
     EnableTaskbarInteraction(FALSE);
@@ -48,7 +48,7 @@ BOOL CVoxelGameApp::InitInstance()
 
     // To create the main window, this code creates a new frame window
     // object and then sets it as the application's main window object
-    CMainFrame* pFrame = new CMainFrame;
+    MainFrame* pFrame = new MainFrame;
     if (!pFrame)
     {
         return FALSE;
@@ -67,14 +67,14 @@ BOOL CVoxelGameApp::InitInstance()
     return TRUE;
 }
 
-int CVoxelGameApp::ExitInstance()
+int VoxelGame::ExitInstance()
 {
     //TODO: handle additional resources you may have added
     return CWinApp::ExitInstance();
 }
 
 // App command to run the dialog
-void CVoxelGameApp::OnAppAbout()
+void VoxelGame::OnAppAbout()
 {
     CAboutDlg aboutDlg;
     aboutDlg.DoModal();

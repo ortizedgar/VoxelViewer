@@ -93,6 +93,9 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files\Misc Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Glyph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VoxelGame.cpp">
@@ -154,6 +157,9 @@
       <Filter>Misc Files</Filter>
     </None>
     <None Include="packages.config">
+      <Filter>Misc Files</Filter>
+    </None>
+    <None Include="ClassDiagram.cd">
       <Filter>Misc Files</Filter>
     </None>
   </ItemGroup>
