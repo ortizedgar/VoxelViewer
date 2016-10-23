@@ -410,14 +410,14 @@ void RenderEngine::TextureVR()
 void RenderEngine::Release()
 {
     //TODO:
-    // falta liberar todo....    
+    // falta liberar todo....
 }
 
 void RenderEngine::renderHUD()
 {
     int px = fbWidth / 2;
     int py = fbHeight / 2;
-    int r = target_hit ? 80 : 40;
+    int r = this->CheckTargetHit() ? 80 : 40;
     glColor4f(0, 113.f / 256.f, 192.f / 256.f, 0.3f);
     renderCircle(px, py, r);
 
@@ -464,10 +464,15 @@ void RenderEngine::renderHUD()
     glColor3f(mr, mg, mb);
     renderRect(10, fbHeight - 40, 30, 30);
 
-    if (target_hit)
+    if (this->CheckTargetHit())
     {
         renderText(px - 40, py, "Target hit!");
     }
+}
+
+bool RenderEngine::CheckTargetHit()
+{
+    return this->target_hit && this->filtro == 0;
 }
 
 void RenderEngine::renderCircle(int px, int py, int r)

@@ -27,4 +27,6 @@ private:
     void MoveCameraWithMouse(vec3 &cero, long double &movimientoHorizontal, long double &movimientoVertical);
     void MoveCameraWithKeyboard(double elapsed_time);
     void SetFiltroWithKeyboard();
+    bool filterKeyPressed;
+    float time;
 };

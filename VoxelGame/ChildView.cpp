@@ -17,6 +17,8 @@ ChildView::ChildView()
     this->sensibilidad = 1000;
     this->oldCursorPosition = (LPPOINT)calloc(1, sizeof(this->oldCursorPosition));
     this->newCursorPosition = (LPPOINT)calloc(2, sizeof(this->newCursorPosition));
+    this->filterKeyPressed = false;
+    this->time = 60;
 }
 
 ChildView::~ChildView()
@@ -82,7 +84,6 @@ float clamp256(float x)
 void ChildView::RenderLoop()
 {
     auto seguir = static_cast<BOOL>(TRUE);
-    auto time = 0.f;
 
     // Address of current frequency
     LARGE_INTEGER F, T0, T1;
@@ -96,14 +97,14 @@ void ChildView::RenderLoop()
     auto movimientoHorizontal = 0.l;
     auto movimientoVertical = 0.l;
 
-    while (seguir)
+    while (seguir && this->time > 0)
     {
         QueryPerformanceCounter(&T1);
         elapsed_time = static_cast<double>((T1.QuadPart - T0.QuadPart)) / static_cast<double>(F.QuadPart);
         T0 = T1;
-        time += static_cast<float>(elapsed_time);
+        this->time -= static_cast<float>(elapsed_time);
         frame_time += static_cast<float>(elapsed_time);
-        this->escena.time = time;
+        this->escena.time = this->time;
         this->escena.elapsed_time = static_cast<float>(elapsed_time);
         if (frame_time > 1)
         {
@@ -161,22 +162,29 @@ void ChildView::RenderLoop()
 
 void ChildView::SetFiltroWithKeyboard()
 {
-    if (GetAsyncKeyState(VK_ADD)) {
-        this->escena.filtro = 1;
+    if (GetAsyncKeyState('F'))
+    {
+        if (this->filterKeyPressed == false)
+        {
+            this->filterKeyPressed = true;
+            this->escena.filtro = this->escena.filtro == 0 ? 1 : 0;
+        }
     }
-
-    if (GetAsyncKeyState(VK_SUBTRACT)) {
-        this->escena.filtro = 0;
+    else
+    {
+        this->filterKeyPressed = false;
     }
 }
 
 void ChildView::MoveCameraWithKeyboard(double elapsed_time)
 {
-    if (GetAsyncKeyState('W')) {
+    if (GetAsyncKeyState('W'))
+    {
         this->escena.lookFrom = this->escena.lookFrom + this->escena.viewDir*(static_cast<float>(elapsed_time)*this->escena.vel_tras);
     }
 
-    if (GetAsyncKeyState('S')) {
+    if (GetAsyncKeyState('S'))
+    {
         this->escena.lookFrom = this->escena.lookFrom - this->escena.viewDir*(static_cast<float>(elapsed_time)*this->escena.vel_tras);
     }
 }
@@ -198,7 +206,8 @@ void ChildView::MoveCameraWithMouse(vec3 &cero, long double &movimientoHorizonta
         }
 
         movimientoVertical = this->oldCursorPosition->y - this->newCursorPosition->y;
-        if (movimientoVertical != 0) {
+        if (movimientoVertical != 0)
+        {
             movimientoVertical /= sensibilidad;
             this->escena.viewDir.rotar(cero, this->escena.V, static_cast<float>(movimientoVertical));
             this->escena.U.rotar(cero, this->escena.V, static_cast<float>(movimientoVertical));

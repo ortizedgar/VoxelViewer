@@ -53,4 +53,5 @@ public:
 private:
     void CheckCompilationStatus(GLhandleARB * vs_main);
     char *textFileRead(char *fn);
+    bool CheckTargetHit();
 };
