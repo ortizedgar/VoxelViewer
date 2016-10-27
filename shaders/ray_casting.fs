@@ -11,23 +11,30 @@ uniform float time;
 varying vec3 vTexCoord;
 const float cant_total = 15.0;
 
-// transfer function
+// Transfer function
 vec3 transfer(float I)
 {
     vec3 clr;
     float t0 = 0.3;
     float t1 = 0.7;
     if(I<t0)
+    {
         clr = vec3(0.0 , 0.0 , I/t0);
+    }
     else
-    if(I<t1)
-        clr = vec3(0.0 , (I-t0)/(t1-t0) , 0.0);
-    else
-        clr = vec3((I-t1)/(1-t1),0.0 , 0.0);
-    return mix(clr , vec3(I,I,I) , 0.5);
-    
-}
+    {
+        if(I<t1)
+        {
+            clr = vec3(0.0 , (I-t0)/(t1-t0) , 0.0);
+        }
+        else
+        {
+            clr = vec3((I-t1)/(1-t1),0.0 , 0.0);
+        }
+    }
 
+    return mix(clr , vec3(I,I,I) , 0.5);
+}
 
 float opDisplace( vec3 p )
 {
@@ -65,16 +72,19 @@ void main()
     vec3 S = vec3(0.0,0.0,0.0);
     float k = 1.0;
 
-    // ray marching
-    for (int i = 0; i < cant_total; i++) {
+    // Ray marching
+    for (int i = 0; i < cant_total; i++)
+    {
         S += tex3d(ro)*k;
         ro += rd*voxel_step;
     }
+
     S /= cant_total;
-    
+
     if(game_status!=0)
+    {
         S.rg *= 1.5;
-    
-    gl_FragColor = vec4( S, 1.0 );
-    
+    }
+
+    gl_FragColor = vec4(S, 1.0);
 }

@@ -17,7 +17,7 @@
   <Class Name="RenderEngine">
     <Position X="0.5" Y="3.75" Width="7" />
     <TypeIdentifier>
-      <HashCode>AAAJAAShBACACwSIAMhASAGAASgAAgAAALwJABkyARE=</HashCode>
+      <HashCode>AAAZAAShBACACwSIAMhASAGAASgAAgAAALwJABkyARE=</HashCode>
       <FileName>RenderEngine.h</FileName>
     </TypeIdentifier>
   </Class>
@@ -43,21 +43,21 @@
     </TypeIdentifier>
   </Class>
   <Class Name="VoxelGame">
-    <Position X="13.5" Y="5.5" Width="1.75" />
+    <Position X="14.75" Y="0.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAABAAAAAAAAAAAAAAAABAAAAAAQAAAABAAAAAAA=</HashCode>
       <FileName>VoxelGame.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="ChildView">
-    <Position X="13" Y="0.5" Width="3.25" />
+    <Position X="13.5" Y="2.75" Width="3.25" />
     <TypeIdentifier>
-      <HashCode>AACAAAAAAAEAAAAAAAAAAAiAgAAAAAAAAAAAAAIAAAA=</HashCode>
+      <HashCode>AACBAAAAAAAIAACAAAAAAAiAgQAAAABBEAAAEAJEAAA=</HashCode>
       <FileName>ChildView.h</FileName>
     </TypeIdentifier>
   </Class>
   <Struct Name="Glyph">
-    <Position X="13.5" Y="3.75" Width="1.5" />
+    <Position X="13" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAACAAAABAAAAAAAAEAAAAAAA=</HashCode>
       <FileName>Glyph.h</FileName>

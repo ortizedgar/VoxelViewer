@@ -11,6 +11,8 @@ Texture::Texture()
     this->dy(0);
     this->dz(0);
     this->id(0);
+    this->_anomalies = 10;
+    this->_anomalieRadius = 8;
 }
 
 Texture::~Texture()
@@ -57,14 +59,21 @@ bool Texture::CreateFromFile(LPCTSTR lpDataFile_i, int nWidth_i, int nHeight_i, 
         pRGBABuffer[nIndx * 4 + 3] = chBuffer[nIndx];
     }
 
-    // experimento, le pongo una caja roja
-    for (int i = 0; i < 20; ++i)
+    // Experimento, le pongo una caja roja
+    auto _anomaliesPositions = new int*[_anomalies];
+    auto dimensiones = 3, x = 0, y = 0, z = 0;
+    for (auto i = 0; i < this->_anomalies; ++i)
     {
-        int r = 8;
-        int x = static_cast<int>((float)rand() / (float)RAND_MAX*200.0f + 20);
-        int y = static_cast<int>((float)rand() / (float)RAND_MAX*200.0f + 20);
-        int z = static_cast<int>((float)rand() / (float)RAND_MAX*200.0f + 20);
-        Ellipsoid(pRGBABuffer, x - r, y - r, z - r, x + r, y + r, z + r);
+        _anomaliesPositions[i] = new int[dimensiones];
+        for (auto j = 0; j < dimensiones; j++)
+        {
+            _anomaliesPositions[i][j] = static_cast<int>((float)rand() / (float)RAND_MAX*200.0f + 20);
+        }
+
+        x = _anomaliesPositions[i][0];
+        y = _anomaliesPositions[i][1];
+        z = _anomaliesPositions[i][2];
+        this->Ellipsoid(pRGBABuffer, x - this->_anomalieRadius, y - this->_anomalieRadius, z - this->_anomalieRadius, x + this->_anomalieRadius, y + this->_anomalieRadius, z + this->_anomalieRadius);
     }
 
     if (0 != this->id())

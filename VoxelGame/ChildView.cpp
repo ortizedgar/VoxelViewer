@@ -58,7 +58,7 @@ void ChildView::OnPaint()
         }
         else
         {
-            RenderLoop();
+            this->RenderLoop();
         }
     }
 }
@@ -96,7 +96,7 @@ void ChildView::RenderLoop()
     auto cero = vec3(0, 0, 0);
     auto movimientoHorizontal = 0.l;
     auto movimientoVertical = 0.l;
-
+    MSG Msg;
     while (seguir && this->time > 0)
     {
         QueryPerformanceCounter(&T1);
@@ -123,7 +123,6 @@ void ChildView::RenderLoop()
         this->escena.Render();
         ++cant_frames;
 
-        MSG Msg;
         ZeroMemory(&Msg, sizeof(Msg));
         if (PeekMessage(&Msg, NULL, 0U, 0U, PM_REMOVE))
         {

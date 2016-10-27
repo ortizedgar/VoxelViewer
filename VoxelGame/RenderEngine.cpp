@@ -32,7 +32,7 @@ bool RenderEngine::Initialize(HDC hContext_i)
 {
     m_hDC = hContext_i;
 
-    //Setting up the dialog to support the OpenGL.
+    // Setting up the dialog to support the OpenGL.
     PIXELFORMATDESCRIPTOR stPixelFormatDescriptor;
     memset(&stPixelFormatDescriptor, 0, sizeof(PIXELFORMATDESCRIPTOR));
     stPixelFormatDescriptor.nSize = sizeof(PIXELFORMATDESCRIPTOR);
@@ -43,8 +43,9 @@ bool RenderEngine::Initialize(HDC hContext_i)
     stPixelFormatDescriptor.cDepthBits = 32;
     stPixelFormatDescriptor.cStencilBits = 8;
     stPixelFormatDescriptor.iLayerType = PFD_MAIN_PLANE;
-    int nPixelFormat = ChoosePixelFormat(hContext_i, &stPixelFormatDescriptor); //Collect the pixel format.
 
+    // Collect the pixel format.
+    auto nPixelFormat = ChoosePixelFormat(hContext_i, &stPixelFormatDescriptor);
     if (nPixelFormat == 0)
     {
         AfxMessageBox(_T("Error while Choosing Pixel format"));
@@ -76,7 +77,7 @@ bool RenderEngine::Initialize(HDC hContext_i)
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    // Inicializa las texturas 3d, para eso uso el wrapper de Opengl glew
+    // Inicializa las texturas 3d, para eso uso el wrapper de Opengl Glew
     glewInit();
     if (GL_TRUE != glewGetExtension("GL_EXT_texture3D"))
     {
@@ -85,16 +86,17 @@ bool RenderEngine::Initialize(HDC hContext_i)
     }
 
     // Pongo los shaders
-    setShaders();
+    this->setShaders();
 
     // Inicio el sistema de fonts simples
-    initFonts();
+    this->initFonts();
 
+    // if( !tex.CreateFromFile( "media/bonsai.raw", 256, 256,256))
     if (!tex.CreateFromFile(_T("../media/mri-head.raw"), 256, 256, 256))
-        //if( !tex.CreateFromFile( "media/bonsai.raw", 256, 256,256))
     {
         AfxMessageBox(_T("Failed to read the data"));
     }
+
     /*
     if( !tex.CreateFromTest( 1, 256, 256,256))
     {
@@ -113,28 +115,25 @@ void RenderEngine::initFonts()
 {
     CDC *pDC = CDC::FromHandle(m_hDC);
     CFont hfont, *hfontOld;
-    hfont.CreateFont(32, 0, 0, 0, FW_EXTRABOLD, 0, 0, 0, 0, 0, 0, 0, 0, _T("Times New Roman"));
-    //"Proxy 1");
+    hfont.CreateFont(48, 13, 0, 0, FW_EXTRALIGHT, 0, 0, 0, 0, OUT_TT_PRECIS, 0, CLEARTYPE_QUALITY, FIXED_PITCH || FF_ROMAN, NULL);
     hfontOld = pDC->SelectObject(&hfont);
-
-    for (int i = 0; i < 255; ++i)
+    char s[1];
+    auto nNumPoints = 0;
+    for (auto i = 0; i < 255; ++i)
     {
-        char s[1];
         s[0] = i;
         pDC->SetBkMode(TRANSPARENT);
         pDC->BeginPath();
         TextOutA(pDC->m_hDC, 0, 0, s, 1);
         pDC->EndPath();
         pDC->FlattenPath();
-
-        int nNumPoints = pDC->GetPath((LPPOINT)NULL, (LPBYTE)NULL, 0);
+        nNumPoints = pDC->GetPath((LPPOINT)NULL, (LPBYTE)NULL, 0);
         if (nNumPoints > 0)
         {
             glyphs[i].lpPt = new POINT[nNumPoints];
             glyphs[i].lpB = new BYTE[nNumPoints];
             glyphs[i].nNumPoints = pDC->GetPath(glyphs[i].lpPt, glyphs[i].lpB, nNumPoints);
         }
-
     }
 
     pDC->SelectObject(hfontOld);
@@ -142,11 +141,10 @@ void RenderEngine::initFonts()
 
 void RenderEngine::Resize(int nWidth_i, int nHeight_i)
 {
-    GLdouble AspectRatio = (GLdouble)(nWidth_i) / (GLdouble)(nHeight_i);
     glViewport(0, 0, nWidth_i, nHeight_i);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-
+    auto AspectRatio = (GLdouble)(nWidth_i) / (GLdouble)(nHeight_i);
     if (nWidth_i <= nHeight_i)
     {
         glOrtho(-1, 1, -(1 / AspectRatio), 1 / AspectRatio, 2.0f*-1, 2.0f * 1);
@@ -163,10 +161,9 @@ void RenderEngine::Resize(int nWidth_i, int nHeight_i)
 void RenderEngine::Render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     if (tex.id() == 0)
     {
-        renderText(10, 510, "sin archivo cargado");
+        this->renderText(10, 510, "Sin archivo cargado");
     }
     else
     {
@@ -214,8 +211,8 @@ void RenderEngine::RayCasting()
 
     glBegin(GL_QUADS);
 
-    float dx = 0.0f;
-    float dy = 0.0f;
+    auto dx = 0.0f;
+    auto dy = 0.0f;
     glTexCoord2f(-1, -1);
     glVertex3f(-1, -1, 0);
 
@@ -247,9 +244,9 @@ void RenderEngine::RayCasting()
     }
     else
     {
-        sprintf_s(saux, "Voxel Game fps = %.1f", fps);
+        sprintf_s(saux, "Voxel Game fps = %.1f", this->fps);
         renderText(10, 10, saux);
-        sprintf_s(saux, "SCORE :  %04d", cant_capturados * 100);
+        sprintf_s(saux, "SCORE :  %04d", this->cant_capturados * 100);
         renderText(10, 40, saux);
 
         // Time
@@ -265,43 +262,16 @@ void RenderEngine::RayCasting()
         renderText(0.005f, fbWidth - 350, fbHeight - 100, saux);
     }
 
-    target_hit = false;
-    //if(filtro)
-    {
-        // verifico si pasa sobre una zona caliente
-        GLfloat *array;
-        array = (GLfloat*)calloc(4192, sizeof(GLfloat));
-        if (array != nullptr) {
-            int r = 5;
-            int cant = 4 * r*r;
-            mr = mg = mb = 0;
-            glReadPixels(fbWidth / 2 - r, fbHeight / 2 - r, 2 * r, 2 * r, GL_RGB, GL_FLOAT, array);
-            for (int i = 0; i < cant; ++i)
-            {
-                mr += array[3 * i];
-                mg += array[3 * i + 1];
-                mb += array[3 * i + 2];
-            }
+    this->target_hit = false;
 
-            mr /= cant;
-            mg /= cant;
-            mb /= cant;
+    // Verifico si pasa sobre un objetivo
+    this->CheckObjetivoEnLaMira();
 
-            BYTE R = static_cast<BYTE>(mr * 256);
-            BYTE G = static_cast<BYTE>(mg * 256);
-            BYTE B = static_cast<BYTE>(mb * 256);
-            if (R > G && R > B && R > 200)
-            {
-                target_hit = true;
-            }
-        }
-    }
+    this->renderHUD();
 
-    renderHUD();
     if (!game_status)
     {
-        vec3 pos = lookFrom + viewDir*voxel_step0;
-        if ((pos - vec3(0, 0, 0)).length() < 5)
+        if (((lookFrom + viewDir*voxel_step0) - vec3(0, 0, 0)).length() < 5)
         {
             renderText(10, 80, " *** Target found *** ");
             game_status = 1;
@@ -320,20 +290,57 @@ void RenderEngine::RayCasting()
         }
     }
 
-    // Bisturi
+    // Eliminar objetivo
+    this->FireWeapon();
+}
+
+void RenderEngine::FireWeapon()
+{
     if (GetAsyncKeyState(VK_LBUTTON))
     {
-        vec3 pos = lookFrom + viewDir*voxel_step0;
-        int tx = static_cast<int>(pos.x + 128);
-        int ty = static_cast<int>(pos.z + 128);
-        int tz = static_cast<int>(pos.y + 128);
+        if (this->target_hit) {
+            this->cant_capturados++;
+        }
+
+        auto pos = lookFrom + viewDir*voxel_step0;
+        auto drawDistance = 128;
         glBindTexture(GL_TEXTURE_3D, tex.id());
-        int r = 8;
-        int size = 4 * r*r*r;
-        char *RGBABuffer = new char[size];
+        auto r = this->tex.AnomalieRadius() * 2;
+        auto size = 4 * r*r*r;
+        auto *RGBABuffer = new char[size];
         memset(RGBABuffer, 0, size);
-        glTexSubImage3D(GL_TEXTURE_3D, 0, tx - r / 2, ty - r / 2, tz - r / 2, r, r, r, GL_RGBA, GL_UNSIGNED_BYTE, RGBABuffer);
+        glTexSubImage3D(GL_TEXTURE_3D, 0, static_cast<int>(pos.x + drawDistance) - r / 2, static_cast<int>(pos.z + drawDistance) - r / 2, static_cast<int>(pos.y + drawDistance) - r / 2, r, r, r, GL_RGBA, GL_UNSIGNED_BYTE, RGBABuffer);
         delete[] RGBABuffer;
+    }
+}
+
+void RenderEngine::CheckObjetivoEnLaMira()
+{
+    auto *array = (GLfloat*)calloc(4192, sizeof(GLfloat));
+    if (array != nullptr)
+    {
+        int r = 5;
+        int cant = 4 * r*r;
+        mr = mg = mb = 0;
+        glReadPixels(fbWidth / 2 - r, fbHeight / 2 - r, 2 * r, 2 * r, GL_RGB, GL_FLOAT, array);
+        for (auto i = 0; i < cant; ++i)
+        {
+            mr += array[3 * i];
+            mg += array[3 * i + 1];
+            mb += array[3 * i + 2];
+        }
+
+        mr /= cant;
+        mg /= cant;
+        mb /= cant;
+
+        auto R = mr * 256;
+        auto G = mg * 256;
+        auto B = mb * 256;
+        if (R > G && R > B && R > 200)
+        {
+            this->target_hit = true;
+        }
     }
 }
 
@@ -348,21 +355,21 @@ void RenderEngine::TextureVR()
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
 
-    // escalo y roto con respecto al centro del cubo 
+    // Escalo y roto con respecto al centro del cubo 
     glTranslatef(0.5f, 0.5f, 0.5f);
-    float E = 1;
+    auto E = 1.f;
     glScaled(E, 1.0f*(float)tex.dx() / (float)tex.dy()*E, (float)tex.dx() / (float)tex.dz()*E);
     //mat4 transform = mat4::RotateX(an_x) * mat4::RotateY(an_y) * mat4::RotateZ(an_z);
     //mat4 transform = mat4::fromBase(viewDir , U,V);
-    float t = time*0.1f;
-    mat4 transform = mat4::RotateX(t) * mat4::RotateY(t) * mat4::RotateZ(t);
+    auto t = time*0.1f;
+    auto transform = mat4::RotateX(t) * mat4::RotateY(t) * mat4::RotateZ(t);
     glMultMatrixd((const double *)transform.m());
     glTranslatef(-0.5f, -0.5f, -0.5f);
 
     glEnable(GL_TEXTURE_3D);
 
     glUseProgramObjectARB(shader_prog2);
-    vec3 pos = lookFrom;
+    auto pos = lookFrom;
     glUniform3f(glGetUniformLocation(shader_prog2, "pos"), static_cast<float>(pos.x), static_cast<float>(pos.y), static_cast<float>(pos.z));
     glUniform3f(glGetUniformLocation(shader_prog2, "iViewDir"), static_cast<float>(viewDir.x), static_cast<float>(viewDir.y), static_cast<float>(viewDir.z));
 
@@ -376,12 +383,15 @@ void RenderEngine::TextureVR()
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
 
-    for (float fIndx = -1.0f; fIndx <= 1.0f; fIndx += 0.05f)
+    auto TexIndex = 0.f;
+    auto s = 0.f;
+    auto d = 0.f;
+    for (auto fIndx = -1.0f; fIndx <= 1.0f; fIndx += 0.05f)
     {
         glBegin(GL_QUADS);
-        float TexIndex = fIndx;
-        float s = (1 - fIndx) / 4.0f * 0.1f;
-        float d = 1.25;
+        TexIndex = fIndx;
+        s = (1 - fIndx) / 4.0f * 0.1f;
+        d = 1.25f;
 
         glTexCoord3f(0, 0, ((float)TexIndex + 1.0f) / 2.0f);
         glVertex3f(-1 + s + d, -1 + s + d, TexIndex);
@@ -419,7 +429,7 @@ void RenderEngine::renderHUD()
     int py = fbHeight / 2;
     int r = this->CheckTargetHit() ? 80 : 40;
     glColor4f(0, 113.f / 256.f, 192.f / 256.f, 0.3f);
-    renderCircle(px, py, r);
+    this->renderCircle(px, py, r);
 
     glColor4f(0, 143.f / 256.f, 222.f / 256.f, 1);
     float x0 = 2 * px / (float)fbWidth - 1;
@@ -451,9 +461,10 @@ void RenderEngine::renderHUD()
     glLineWidth(1);
     rx *= 0.9f;
     ry *= 0.9f;
-    for (int an = 0; an <= 360; an += 10)
+    auto alfa = 0.f;
+    for (auto an = 0; an <= 360; an += 10)
     {
-        float alfa = an*3.1415f / 180.0f;
+        alfa = an*3.1415f / 180.0f;
         glBegin(GL_LINES);
         glVertex3f(x0 + static_cast<float>(rx*cos(alfa)), static_cast<float>(y0 + ry*sin(alfa)), 0);
         glVertex3f(x0 + static_cast<float>(rx*cos(alfa)*0.9), static_cast<float>(y0 + ry*sin(alfa)*0.9), 0);
@@ -462,11 +473,11 @@ void RenderEngine::renderHUD()
 
     // Color promedio
     glColor3f(mr, mg, mb);
-    renderRect(10, fbHeight - 40, 30, 30);
+    this->renderRect(10, fbHeight - 40, 30, 30);
 
     if (this->CheckTargetHit())
     {
-        renderText(px - 40, py, "Target hit!");
+        renderText(px - 40, py, "Fire!");
     }
 }
 
@@ -484,9 +495,10 @@ void RenderEngine::renderCircle(int px, int py, int r)
 
     glBegin(GL_TRIANGLE_FAN);
     glVertex3f(x0, y0, 0);
-    for (int an = 0; an <= 360; an += 10)
+    auto alfa = 0.f;
+    for (auto an = 0; an <= 360; an += 10)
     {
-        float alfa = an*3.1415f / 180.0f;
+        alfa = an*3.1415f / 180.0f;
         glVertex3f(x0 + static_cast<float>(rx*cos(alfa)), static_cast<float>(y0 + ry*sin(alfa)), 0);
     }
 
@@ -512,48 +524,45 @@ void RenderEngine::renderText(int px, int py, char *text)
 {
     glLineWidth(6);
     glColor4f(0.2f, 1.0f, 0.2f, 0.5f);
-    renderText(0.0017f, px, py, text);
+    this->renderText(0.0017f, px, py, text);
 
     glLineWidth(2);
     glColor3f(0.5f, 1.0f, 0.5f);
-    renderText(0.0017f, px, py, text);
+    this->renderText(0.0017f, px, py, text);
 }
 
 void RenderEngine::renderText(float K, int px, int py, char *text)
 {
     float x0 = 2 * px / (float)fbWidth - 1;
     float y0 = 1 - 2 * py / (float)fbHeight;
-    int len = static_cast<int>(strlen(text));
-    float max_x = -999;
+    auto len = static_cast<int>(strlen(text));
+    auto max_x = -999.f;
     for (int t = 0; t < len; ++t)
     {
         int j = text[t];
         if (j == 32)
         {
             x0 += 24 * K;
-            continue;;
+            continue;
         }
 
         Glyph *G = &glyphs[j];
-
-        float ant_x = 0, ant_y = 0;
+        auto ant_x = 0.f, ant_y = 0.f;
         for (int i = 0; i < G->nNumPoints; i++)
         {
-            // ajusto posicion , origen y escala (en teoria orgien = 0, y escala = 1)
+            // Ajusto posicion , origen y escala (en teoria orgien = 0, y escala = 1)
             float x = x0 + G->lpPt[i].x * K;
             float y = y0 - G->lpPt[i].y * K;
-
-            if (x > max_x)
+            if (x > max_x) {
                 max_x = x;
+            }
 
             switch (G->lpB[i])
             {
-
             case PT_MOVETO:
                 ant_x = x;
                 ant_y = y;
                 break;
-
             case PT_LINETO | PT_CLOSEFIGURE:
             case PT_LINETO:
                 glBegin(GL_LINES);
@@ -620,14 +629,14 @@ void RenderEngine::setShaders()
     // Shaders ray casting
     vs = this->textFileRead("../shaders/ray_casting.vs");
     fs = this->textFileRead("../shaders/ray_casting.fs");
-    loadShaders(vs, fs, &vs_main, &fs_main, &shader_prog);
+    this->loadShaders(vs, fs, &vs_main, &fs_main, &shader_prog);
     free(vs);
     free(fs);
 
     // Shaders texture volumen
     vs = this->textFileRead("../shaders/texture_vr.vs");
     fs = this->textFileRead("../shaders/texture_vr.fs");
-    loadShaders(vs, fs, &vs2_main, &fs2_main, &shader_prog2);
+    this->loadShaders(vs, fs, &vs2_main, &fs2_main, &shader_prog2);
     free(vs);
     free(fs);
 }
@@ -636,20 +645,20 @@ char *RenderEngine::textFileRead(char *fn)
 {
     FILE *fp;
     char *content = NULL;
-
     int count = 0;
-
-    if (fn != NULL) {
+    if (fn != NULL)
+    {
         fopen_s(&fp, fn, "rt");
-
-        if (fp != NULL) {
+        if (fp != NULL)
+        {
             fseek(fp, 0, SEEK_END);
             count = ftell(fp);
             rewind(fp);
-
-            if (count > 0) {
+            if (count > 0)
+            {
                 content = (char *)malloc(sizeof(char) * (count + 1));
-                if (content != nullptr) {
+                if (content != nullptr)
+                {
                     count = static_cast<int>(fread(content, sizeof(char), count, fp));
                     content[count] = '\0';
                 }
