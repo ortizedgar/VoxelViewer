@@ -8,7 +8,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="math">
-    <Position X="11.25" Y="9" Width="4" />
+    <Position X="13.5" Y="7.5" Width="4" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAQAAAAAAAAAABAAAAAAAAQAAAAAAAAA=</HashCode>
       <FileName>math.h</FileName>
@@ -17,26 +17,26 @@
   <Class Name="RenderEngine">
     <Position X="0.5" Y="3.75" Width="7" />
     <TypeIdentifier>
-      <HashCode>AAAZAAShBACACwSIAMhASAGAASgAAgAAALwJABkyARE=</HashCode>
+      <HashCode>CAAZAAahBAGACwSIAMhASAGAASgBAwAAAL0JADkyARM=</HashCode>
       <FileName>RenderEngine.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Texture">
     <Position X="8" Y="3.75" Width="5.25" />
     <TypeIdentifier>
-      <HashCode>AAAAgAAAAAAAgAAAAABIAEAQAAKAAAAQAAJAAAAABgA=</HashCode>
+      <HashCode>AAAAgAAAAAAAgAAAAABIAEAQQAKAAAAQAAJAAAAABgQ=</HashCode>
       <FileName>Texture.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="vec3">
-    <Position X="8" Y="9" Width="2.75" />
+    <Position X="8" Y="9.75" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAARAAAAAEAIAAAAAAAAAIABAABkAQAAAAA=</HashCode>
       <FileName>vec3.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="vec4">
-    <Position X="11.25" Y="10.75" Width="3.25" />
+    <Position X="11.25" Y="9.75" Width="3.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAhgAQAAAAA=</HashCode>
       <FileName>vec4.h</FileName>
@@ -50,7 +50,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="ChildView">
-    <Position X="13.5" Y="2.75" Width="3.25" />
+    <Position X="13.5" Y="2.75" Width="7.25" />
     <TypeIdentifier>
       <HashCode>AACBAAAAAAAIAACAAAAAAAiAgQAAAABBEAAAEAJEAAA=</HashCode>
       <FileName>ChildView.h</FileName>

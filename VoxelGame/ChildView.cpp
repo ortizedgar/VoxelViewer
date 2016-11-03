@@ -18,7 +18,7 @@ ChildView::ChildView()
     this->oldCursorPosition = (LPPOINT)calloc(1, sizeof(this->oldCursorPosition));
     this->newCursorPosition = (LPPOINT)calloc(2, sizeof(this->newCursorPosition));
     this->filterKeyPressed = false;
-    this->time = 60;
+    this->time = 15;
 }
 
 ChildView::~ChildView()
@@ -102,7 +102,11 @@ void ChildView::RenderLoop()
         QueryPerformanceCounter(&T1);
         elapsed_time = static_cast<double>((T1.QuadPart - T0.QuadPart)) / static_cast<double>(F.QuadPart);
         T0 = T1;
-        this->time -= static_cast<float>(elapsed_time);
+        if (this->escena.game_stage != 0)
+        {
+            this->time -= static_cast<float>(elapsed_time);
+        }
+
         frame_time += static_cast<float>(elapsed_time);
         this->escena.time = this->time;
         this->escena.elapsed_time = static_cast<float>(elapsed_time);
@@ -149,9 +153,28 @@ void ChildView::RenderLoop()
                 case VK_ESCAPE:
                     seguir = FALSE;
                     break;
+                default:
+                    if (this->escena.game_stage == 0)
+                    {
+                        this->escena.game_stage = 1;
+                    }
                 }
 
                 break;
+            }
+        }
+    }
+
+    this->escena.game_stage = 2;
+    ZeroMemory(&Msg, sizeof(Msg));
+    while (this->escena.game_stage == 2)
+    {
+        this->escena.Render();
+        if (PeekMessage(&Msg, NULL, 0U, 0U, PM_REMOVE))
+        {
+            if (Msg.message == WM_KEYDOWN)
+            {
+                this->escena.game_stage = 3;
             }
         }
     }

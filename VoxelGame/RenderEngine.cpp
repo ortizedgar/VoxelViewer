@@ -11,6 +11,7 @@
 RenderEngine::RenderEngine()
 {
     game_status = 0;
+    game_stage = 0;
     fps = 0;
     viewDir = vec3(1, 0, 0);
     U = vec3(0, 1, 0);
@@ -167,11 +168,99 @@ void RenderEngine::Render()
     }
     else
     {
-        this->RayCasting();
-        this->TextureVR();
+        if (this->game_stage == 0)
+        {
+            this->RenderStartScreen();
+        }
+
+        if (this->game_stage == 1)
+        {
+            this->RenderGame();
+        }
+
+        if (this->game_stage == 2)
+        {
+            glDisable(GL_ALPHA_TEST);
+            glDisable(GL_BLEND);
+            this->RenderEndScreen();
+        }
     }
 
     SwapBuffers(m_hDC);
+}
+
+void RenderEngine::RenderEndScreen()
+{
+    auto xPosition = this->fbWidth / 2;
+    auto yPosition = this->fbHeight / 8;
+    char score[5];
+    _itoa_s(this->cant_capturados * 100, score, 10);
+    score[4] = '\0';
+    char mensaje[80] = "Fin del juego! Puntuacion: ";
+    auto j = 0;
+    for (auto i = strlen(mensaje); i < strlen(mensaje) + strlen(score); i++)
+    {
+        mensaje[i] = score[j];
+        j++;
+    }
+
+    this->RenderTitleText(xPosition / 2, &yPosition, mensaje);
+}
+
+void RenderEngine::RenderGame()
+{
+    this->RayCasting();
+    this->TextureVR();
+}
+
+void RenderEngine::RenderStartScreen()
+{
+    auto xPosition = this->fbWidth / 2;
+    auto yPosition = this->fbHeight / 8;
+    char *mensaje = "Vexplorer!";
+    this->RenderTitleText(xPosition / 2, &yPosition, mensaje);
+    mensaje = "Bienvenido a Vexplorer!";
+    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
+    mensaje = "Un videojuego de exploracion 3D";
+    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
+    mensaje = "Controles:";
+    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
+    mensaje = "W - Avanzar";
+    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
+    mensaje = "S - Retroceder";
+    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
+    mensaje = "Mouse - Mirar";
+    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
+    mensaje = "Boton izquierdo - Disparar arma";
+    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
+    mensaje = "F - Encender/Apagar filtro";
+    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
+    mensaje = "Presione cualquier tecla para comenzar!";
+    this->RenderStartText(xPosition / 8, &yPosition, mensaje);
+}
+
+void RenderEngine::RenderTitleText(unsigned int xPosition, int *yPosition, char * mensaje)
+{
+    glLineWidth(0);
+    glColor4f(1.f, 0.0f, 0.f, 0.f);
+    this->renderText(0.0017f, xPosition, *yPosition, mensaje);
+    *yPosition += 50;
+}
+
+void RenderEngine::RenderStartText(unsigned int xPosition, int *yPosition, char * mensaje)
+{
+    glLineWidth(0);
+    glColor4f(1.f, 1.0f, 0.f, 0.f);
+    this->renderText(0.0017f, xPosition, *yPosition, mensaje);
+    *yPosition += 50;
+}
+
+void RenderEngine::RenderExplanationText(unsigned int xPosition, int *yPosition, char * mensaje)
+{
+    glLineWidth(0);
+    glColor4f(1.f, 1.0f, 1.f, 0.f);
+    this->renderText(0.0017f, xPosition, *yPosition, mensaje);
+    *yPosition += 50;
 }
 
 // Version con RayCasting
@@ -253,13 +342,14 @@ void RenderEngine::RayCasting()
         sprintf_s(saux, "%02d:%02d", (int)(time / 60), ((int)time) % 60);
         glLineWidth(6);
         glColor4f(1, 1, 1, 0.25);
-        renderText(0.003f, fbWidth - 450, fbHeight - 120, "Time Limit");
+        this->renderText(0.003f, fbWidth - 450, fbHeight - 120, "Time Limit");
 
         glColor4f(1, 1, 1, 0.5f);
-        renderText(0.005f, fbWidth - 350, fbHeight - 100, saux);
+        this->renderText(0.005f, fbWidth - 350, fbHeight - 100, saux);
+
         glLineWidth(2);
         glColor4f(1, 1, 1, 1);
-        renderText(0.005f, fbWidth - 350, fbHeight - 100, saux);
+        this->renderText(0.005f, fbWidth - 350, fbHeight - 100, saux);
     }
 
     this->target_hit = false;
@@ -273,10 +363,10 @@ void RenderEngine::RayCasting()
     {
         if (((lookFrom + viewDir*voxel_step0) - vec3(0, 0, 0)).length() < 5)
         {
-            renderText(10, 80, " *** Target found *** ");
-            game_status = 1;
-            timer_catch = 1;
-            cant_capturados++;
+            this->renderText(10, 80, " *** Target found *** ");
+            this->game_status = 1;
+            this->timer_catch = 1;
+            this->cant_capturados++;
         }
     }
 

@@ -40,6 +40,7 @@ public:
     bool target_hit;
     float vel_tras;
     int game_status;
+    int game_stage;
     float timer_catch;
     int cant_capturados;
     GLint fbWidth;
@@ -56,4 +57,10 @@ private:
     bool CheckTargetHit();
     void CheckObjetivoEnLaMira();
     void FireWeapon();
+    void RenderTitleText(unsigned int xPosition, int *yPosition, char * mensaje);
+    void RenderStartText(unsigned int xPosition, int *yPosition, char * mensaje);
+    void RenderExplanationText(unsigned int xPosition, int *yPosition, char * mensaje);
+    void RenderEndScreen();
+    void RenderGame();
+    void RenderStartScreen();
 };
