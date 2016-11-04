@@ -59,7 +59,7 @@ bool Texture::CreateFromFile(LPCTSTR lpDataFile_i, int nWidth_i, int nHeight_i, 
         pRGBABuffer[nIndx * 4 + 3] = chBuffer[nIndx];
     }
 
-    // Experimento, le pongo una caja roja
+    // Se agregan anomalias
     auto _anomaliesPositions = new int*[_anomalies];
     auto dimensiones = 3, x = 0, y = 0, z = 0;
     for (auto i = 0; i < this->_anomalies; ++i)

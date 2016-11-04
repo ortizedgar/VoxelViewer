@@ -97,7 +97,7 @@ void ChildView::RenderLoop()
     auto movimientoHorizontal = 0.l;
     auto movimientoVertical = 0.l;
     MSG Msg;
-    while (seguir && this->time > 0)
+    while (seguir && (this->time > 0 && this->escena.tex.Anomalies() > 0))
     {
         QueryPerformanceCounter(&T1);
         elapsed_time = static_cast<double>((T1.QuadPart - T0.QuadPart)) / static_cast<double>(F.QuadPart);

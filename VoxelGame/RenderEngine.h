@@ -45,8 +45,6 @@ public:
     int cant_capturados;
     GLint fbWidth;
     GLint fbHeight;
-    GLhandleARB vs_main, fs_main, shader_prog;
-    GLhandleARB vs2_main, fs2_main, shader_prog2;
 
     // Fonts
     Glyph glyphs[255];
@@ -63,4 +61,6 @@ private:
     void RenderEndScreen();
     void RenderGame();
     void RenderStartScreen();
+    GLhandleARB _vertexShaderRayCasting, _fragmentShaderRayCasting, _rayCastingShaderProgram;
+    GLhandleARB _vertexShaderTextureVR, _fragmentShaderTextureVR, _textureVRShaderProgram;
 };

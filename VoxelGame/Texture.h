@@ -25,6 +25,8 @@ public:
     auto id() { return this->_id; }
     auto id(int id) { this->_id = id; }
     auto AnomalieRadius() { return this->_anomalieRadius; }
+    auto Anomalies() { return this->_anomalies; }
+    auto Anomalies(int anomalies) { this->_anomalies = anomalies; }
 
 private:
     int _dx, _dy, _dz, _id, _anomalies, _anomalieRadius;

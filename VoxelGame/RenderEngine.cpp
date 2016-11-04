@@ -279,17 +279,17 @@ void RenderEngine::RayCasting()
     glLoadIdentity();
     glEnable(GL_TEXTURE_3D);
 
-    glUseProgramObjectARB(shader_prog);
+    glUseProgramObjectARB(this->_rayCastingShaderProgram);
 
-    glUniform3f(glGetUniformLocation(shader_prog, "iLookFrom"), static_cast<float>(lookFrom.x), static_cast<float>(lookFrom.y), static_cast<float>(lookFrom.z));
-    glUniform3f(glGetUniformLocation(shader_prog, "iViewDir"), static_cast<float>(viewDir.x), static_cast<float>(viewDir.y), static_cast<float>(viewDir.z));
-    glUniform3f(glGetUniformLocation(shader_prog, "iDx"), static_cast<float>(Dx.x), static_cast<float>(Dx.y), static_cast<float>(Dx.z));
-    glUniform3f(glGetUniformLocation(shader_prog, "iDy"), static_cast<float>(Dy.x), static_cast<float>(Dy.y), static_cast<float>(Dy.z));
-    glUniform1f(glGetUniformLocation(shader_prog, "voxel_step"), voxel_step);
-    glUniform1f(glGetUniformLocation(shader_prog, "voxel_step0"), voxel_step0);
-    glUniform1i(glGetUniformLocation(shader_prog, "game_status"), game_status);
-    glUniform1f(glGetUniformLocation(shader_prog, "time"), time);
-    glUniform1i(glGetUniformLocation(shader_prog, "filter"), filtro);
+    glUniform3f(glGetUniformLocation(this->_rayCastingShaderProgram, "iLookFrom"), static_cast<float>(lookFrom.x), static_cast<float>(lookFrom.y), static_cast<float>(lookFrom.z));
+    glUniform3f(glGetUniformLocation(this->_rayCastingShaderProgram, "iViewDir"), static_cast<float>(viewDir.x), static_cast<float>(viewDir.y), static_cast<float>(viewDir.z));
+    glUniform3f(glGetUniformLocation(this->_rayCastingShaderProgram, "iDx"), static_cast<float>(Dx.x), static_cast<float>(Dx.y), static_cast<float>(Dx.z));
+    glUniform3f(glGetUniformLocation(this->_rayCastingShaderProgram, "iDy"), static_cast<float>(Dy.x), static_cast<float>(Dy.y), static_cast<float>(Dy.z));
+    glUniform1f(glGetUniformLocation(this->_rayCastingShaderProgram, "voxel_step"), voxel_step);
+    glUniform1f(glGetUniformLocation(this->_rayCastingShaderProgram, "voxel_step0"), voxel_step0);
+    glUniform1i(glGetUniformLocation(this->_rayCastingShaderProgram, "game_status"), game_status);
+    glUniform1f(glGetUniformLocation(this->_rayCastingShaderProgram, "time"), time);
+    glUniform1i(glGetUniformLocation(this->_rayCastingShaderProgram, "filter"), filtro);
 
     glActiveTexture(GL_TEXTURE);
     glBindTexture(GL_TEXTURE_3D, tex.id());
@@ -390,6 +390,7 @@ void RenderEngine::FireWeapon()
     {
         if (this->target_hit) {
             this->cant_capturados++;
+            this->tex.Anomalies(this->tex.Anomalies() - 1);
         }
 
         auto pos = lookFrom + viewDir*voxel_step0;
@@ -458,15 +459,15 @@ void RenderEngine::TextureVR()
 
     glEnable(GL_TEXTURE_3D);
 
-    glUseProgramObjectARB(shader_prog2);
+    glUseProgramObjectARB(this->_textureVRShaderProgram);
     auto pos = lookFrom;
-    glUniform3f(glGetUniformLocation(shader_prog2, "pos"), static_cast<float>(pos.x), static_cast<float>(pos.y), static_cast<float>(pos.z));
-    glUniform3f(glGetUniformLocation(shader_prog2, "iViewDir"), static_cast<float>(viewDir.x), static_cast<float>(viewDir.y), static_cast<float>(viewDir.z));
+    glUniform3f(glGetUniformLocation(this->_textureVRShaderProgram, "pos"), static_cast<float>(pos.x), static_cast<float>(pos.y), static_cast<float>(pos.z));
+    glUniform3f(glGetUniformLocation(this->_textureVRShaderProgram, "iViewDir"), static_cast<float>(viewDir.x), static_cast<float>(viewDir.y), static_cast<float>(viewDir.z));
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_3D, tex.id());
 
-    GLint texLoc = glGetUniformLocation(shader_prog2, "s_texture0");
+    GLint texLoc = glGetUniformLocation(this->_textureVRShaderProgram, "s_texture0");
     glUniform1i(texLoc, 0);
 
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -671,42 +672,40 @@ void RenderEngine::renderText(float K, int px, int py, char *text)
     glEnd();
 }
 
-void RenderEngine::loadShaders(char *vs, char *fs, GLhandleARB *vs_main, GLhandleARB *fs_main, GLhandleARB *shader_prog)
+void RenderEngine::loadShaders(char *vertexShaderSourceCode, char *fragmentShaderSourceCode, GLhandleARB *vertexShaderObject, GLhandleARB *fragmentShaderObject, GLhandleARB *shaderProgram)
 {
-    *vs_main = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
-    *fs_main = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
-    const char * vv = vs;
-    const char * ff = fs;
+    *vertexShaderObject = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
+    *fragmentShaderObject = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
 
-    glShaderSourceARB(*vs_main, 1, &vv, NULL);
-    glShaderSourceARB(*fs_main, 1, &ff, NULL);
+    glShaderSourceARB(*vertexShaderObject, 1, const_cast<const GLcharARB**>(&vertexShaderSourceCode), NULL);
+    glShaderSourceARB(*fragmentShaderObject, 1, const_cast<const GLcharARB**>(&fragmentShaderSourceCode), NULL);
 
-    glCompileShaderARB(*vs_main);
-    glCompileShaderARB(*fs_main);
+    glCompileShaderARB(*vertexShaderObject);
+    glCompileShaderARB(*fragmentShaderObject);
 
-    this->CheckCompilationStatus(vs_main);
-    this->CheckCompilationStatus(fs_main);
+    this->CheckCompilationStatus(vertexShaderObject);
+    this->CheckCompilationStatus(fragmentShaderObject);
 
-    *shader_prog = glCreateProgramObjectARB();
+    *shaderProgram = glCreateProgramObjectARB();
 
-    glAttachObjectARB(*shader_prog, *vs_main);
-    glAttachObjectARB(*shader_prog, *fs_main);
+    glAttachObjectARB(*shaderProgram, *vertexShaderObject);
+    glAttachObjectARB(*shaderProgram, *fragmentShaderObject);
 
-    glLinkProgramARB(*shader_prog);
+    glLinkProgramARB(*shaderProgram);
 }
 
-void RenderEngine::CheckCompilationStatus(GLhandleARB * vs_main)
+void RenderEngine::CheckCompilationStatus(GLhandleARB *shaderObject)
 {
     GLint status;
-    glGetObjectParameterivARB(*vs_main, GL_OBJECT_COMPILE_STATUS_ARB, &status);
+    glGetObjectParameterivARB(*shaderObject, GL_OBJECT_COMPILE_STATUS_ARB, &status);
     if (!status)
     {
         GLint maxLength = 0;
-        glGetShaderiv(*vs_main, GL_INFO_LOG_LENGTH, &maxLength);
+        glGetShaderiv(*shaderObject, GL_INFO_LOG_LENGTH, &maxLength);
         auto errorLog = new GLchar[maxLength];
-        glGetShaderInfoLog(*vs_main, maxLength, &maxLength, errorLog);
+        glGetShaderInfoLog(*shaderObject, maxLength, &maxLength, errorLog);
         AfxMessageBox(CString(errorLog));
-        glDeleteShader(*vs_main);
+        glDeleteShader(*shaderObject);
         delete[] errorLog;
         exit(0);
     }
@@ -714,21 +713,19 @@ void RenderEngine::CheckCompilationStatus(GLhandleARB * vs_main)
 
 void RenderEngine::setShaders()
 {
-    char *vs, *fs;
-
     // Shaders ray casting
-    vs = this->textFileRead("../shaders/ray_casting.vs");
-    fs = this->textFileRead("../shaders/ray_casting.fs");
-    this->loadShaders(vs, fs, &vs_main, &fs_main, &shader_prog);
-    free(vs);
-    free(fs);
+    auto vertexShaderSourceCode = this->textFileRead("../shaders/ray_casting.vs");
+    auto fragmentShaderSourceCode = this->textFileRead("../shaders/ray_casting.fs");
+    this->loadShaders(vertexShaderSourceCode, fragmentShaderSourceCode, &_vertexShaderRayCasting, &_fragmentShaderRayCasting, &_rayCastingShaderProgram);
+    free(vertexShaderSourceCode);
+    free(fragmentShaderSourceCode);
 
     // Shaders texture volumen
-    vs = this->textFileRead("../shaders/texture_vr.vs");
-    fs = this->textFileRead("../shaders/texture_vr.fs");
-    this->loadShaders(vs, fs, &vs2_main, &fs2_main, &shader_prog2);
-    free(vs);
-    free(fs);
+    vertexShaderSourceCode = this->textFileRead("../shaders/texture_vr.vs");
+    fragmentShaderSourceCode = this->textFileRead("../shaders/texture_vr.fs");
+    this->loadShaders(vertexShaderSourceCode, fragmentShaderSourceCode, &_vertexShaderTextureVR, &_fragmentShaderTextureVR, &_textureVRShaderProgram);
+    free(vertexShaderSourceCode);
+    free(fragmentShaderSourceCode);
 }
 
 char *RenderEngine::textFileRead(char *fn)
