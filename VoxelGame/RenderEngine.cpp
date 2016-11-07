@@ -221,7 +221,11 @@ void RenderEngine::RenderStartScreen()
     this->RenderTitleText(xPosition / 2, &yPosition, mensaje);
     mensaje = "Bienvenido a Vexplorer!";
     this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
-    mensaje = "Un videojuego de exploracion 3D";
+    mensaje = "Un videojuego de exploracion 3D. El objetivo es";
+    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
+    mensaje = "eliminar todas las esferas rojas posibles";
+    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
+    mensaje = "antes que se agote el tiempo.";
     this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
     mensaje = "Controles:";
     this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
@@ -359,17 +363,6 @@ void RenderEngine::RayCasting()
 
     this->renderHUD();
 
-    if (!game_status)
-    {
-        if (((lookFrom + viewDir*voxel_step0) - vec3(0, 0, 0)).length() < 5)
-        {
-            this->renderText(10, 80, " *** Target found *** ");
-            this->game_status = 1;
-            this->timer_catch = 1;
-            this->cant_capturados++;
-        }
-    }
-
     if (timer_catch > 0)
     {
         timer_catch -= elapsed_time;
@@ -396,11 +389,11 @@ void RenderEngine::FireWeapon()
         auto pos = lookFrom + viewDir*voxel_step0;
         auto drawDistance = 128;
         glBindTexture(GL_TEXTURE_3D, tex.id());
-        auto r = this->tex.AnomalieRadius() * 2;
-        auto size = 4 * r*r*r;
+        auto radius = this->tex.AnomalieRadius() * 2;
+        auto size = 4 * radius*radius*radius;
         auto *RGBABuffer = new char[size];
         memset(RGBABuffer, 0, size);
-        glTexSubImage3D(GL_TEXTURE_3D, 0, static_cast<int>(pos.x + drawDistance) - r / 2, static_cast<int>(pos.z + drawDistance) - r / 2, static_cast<int>(pos.y + drawDistance) - r / 2, r, r, r, GL_RGBA, GL_UNSIGNED_BYTE, RGBABuffer);
+        glTexSubImage3D(GL_TEXTURE_3D, 0, static_cast<int>(pos.x + drawDistance) - radius / 2, static_cast<int>(pos.z + drawDistance) - radius / 2, static_cast<int>(pos.y + drawDistance) - radius / 2, radius, radius, radius, GL_RGBA, GL_UNSIGNED_BYTE, RGBABuffer);
         delete[] RGBABuffer;
     }
 }

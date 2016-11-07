@@ -56,17 +56,17 @@ vec3 tex3d(vec3 pos)
     pos += vec3(128.0,128.0,128.0);
     float k = 1.0/256.0;
     vec4 tx = texture3D(s_texture0,pos.xzy*k);
-    
+
     return filter!=0 ? transfer(tx.r) : tx.rgb + S;
 }
 
 void main()
 {
     vec2 uv = vTexCoord.xy*0.75;
-    
+
     // computo la direccion del rayo
     // D = N + Dy*y + Dx*x;
-    
+
     vec3 rd = normalize(iViewDir + iDy*uv.y + iDx*uv.x);
     vec3 ro = iLookFrom + rd*voxel_step0;
     vec3 S = vec3(0.0,0.0,0.0);
@@ -80,7 +80,6 @@ void main()
     }
 
     S /= cant_total;
-
     if(game_status!=0)
     {
         S.rg *= 1.5;

@@ -15,7 +15,7 @@ vec4 transfer(float I)
         clr = vec4(s , 1.0 , s,1.0);
     else
         clr = vec4(1.0 , s,s,1.0) ;
-        
+
     return clr * I * 1.5;
 }
 
@@ -49,7 +49,7 @@ void main()
         }
     }
     */
-    
+
     vec3 q = (vTexCoord-0.5)* 256;
     float s = dot(q-pos,iViewDir);
     float dist = length(pos + iViewDir*s - q);
