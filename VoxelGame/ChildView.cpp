@@ -13,14 +13,16 @@
 // ChildView
 ChildView::ChildView()
 {
-    this->primera_vez = true;
-    this->sensibilidad = 1000;
+    auto settingsSection = L"Settings";
+    auto filePath = L"./Settings.ini";
+    this->time = static_cast<float>(GetPrivateProfileInt(settingsSection, L"time", 60, filePath));
+    this->demoMode = GetPrivateProfileInt(settingsSection, L"demoMode", 0, filePath) != 0;
+    this->sensibilidad = GetPrivateProfileInt(settingsSection, L"sensibilidad", 1000, filePath);
     this->oldCursorPosition = (LPPOINT)calloc(1, sizeof(this->oldCursorPosition));
     this->newCursorPosition = (LPPOINT)calloc(2, sizeof(this->newCursorPosition));
+    this->primeraVez = true;
     this->filterKeyPressed = false;
     this->_demoKeyPressed = false;
-    this->time = 60 * 3;
-    this->demoMode = false;
     this->escena.setDemoMode(this->demoMode);
     this->moveForeward = true;
     this->totalFrames = 0;
@@ -55,9 +57,9 @@ void ChildView::OnPaint()
 {
     // device context for painting
     CPaintDC dc(this);
-    if (this->primera_vez)
+    if (this->primeraVez)
     {
-        primera_vez = false;
+        primeraVez = false;
         if (!this->escena.Initialize(dc.m_hDC))
         {
             AfxMessageBox(_T("Error al iniciar opengl"), MB_ICONSTOP);

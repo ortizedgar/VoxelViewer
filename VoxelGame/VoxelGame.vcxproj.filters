@@ -162,6 +162,9 @@
     <None Include="ClassDiagram.cd">
       <Filter>Misc Files</Filter>
     </None>
+    <None Include="Settings.ini">
+      <Filter>Misc Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\VoxelGame.ico">

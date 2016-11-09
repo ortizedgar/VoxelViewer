@@ -251,6 +251,7 @@
     <None Include="ClassDiagram.cd" />
     <None Include="packages.config" />
     <None Include="res\VoxelGame.rc2" />
+    <None Include="Settings.ini" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\Toolbar.bmp" />

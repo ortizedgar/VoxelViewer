@@ -22,7 +22,7 @@ private:
     LPPOINT oldCursorPosition;
     LPPOINT newCursorPosition;
     RenderEngine escena;
-    bool primera_vez;
+    bool primeraVez;
     int sensibilidad;
     bool filterKeyPressed;
     bool _demoKeyPressed;
