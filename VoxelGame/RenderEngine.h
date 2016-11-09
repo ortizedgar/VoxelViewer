@@ -24,6 +24,8 @@ public:
     void renderCircle(int px, int py, int r);
     void renderRect(int px0, int py0, int dx, int d1);
     void renderHUD();
+    void setDemoMode(bool demoMode) { this->_demoMode = demoMode; }
+    void setTotalFrames(int totalFrames) { this->_totalFrames = totalFrames; }
     HDC m_hDC;
     HGLRC m_hglContext;
     Texture tex;
@@ -63,4 +65,6 @@ private:
     void RenderStartScreen();
     GLhandleARB _vertexShaderRayCasting, _fragmentShaderRayCasting, _rayCastingShaderProgram;
     GLhandleARB _vertexShaderTextureVR, _fragmentShaderTextureVR, _textureVRShaderProgram;
+    bool _demoMode;
+    int _totalFrames;
 };

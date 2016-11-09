@@ -18,7 +18,13 @@ ChildView::ChildView()
     this->oldCursorPosition = (LPPOINT)calloc(1, sizeof(this->oldCursorPosition));
     this->newCursorPosition = (LPPOINT)calloc(2, sizeof(this->newCursorPosition));
     this->filterKeyPressed = false;
-    this->time = 15;
+    this->_demoKeyPressed = false;
+    this->time = 60;
+    this->demoMode = false;
+    this->escena.setDemoMode(this->demoMode);
+    this->moveForeward = true;
+    this->totalFrames = 0;
+    this->mouseDemoSignal = 0;
 }
 
 ChildView::~ChildView()
@@ -64,7 +70,7 @@ void ChildView::OnPaint()
 }
 
 // Helper clamp pos
-float clamp256(float x)
+float ChildView::Clamp256(float x)
 {
     if (x < -128)
     {
@@ -92,7 +98,7 @@ void ChildView::RenderLoop()
 
     auto cant_frames = 0;
     auto frame_time = 0.f;
-    auto elapsed_time = 0.;
+    auto elapsedTime = 0.;
     auto cero = vec3(0, 0, 0);
     auto movimientoHorizontal = 0.l;
     auto movimientoVertical = 0.l;
@@ -100,16 +106,22 @@ void ChildView::RenderLoop()
     while (seguir && (this->time > 0 && this->escena.tex.Anomalies() > 0))
     {
         QueryPerformanceCounter(&T1);
-        elapsed_time = static_cast<double>((T1.QuadPart - T0.QuadPart)) / static_cast<double>(F.QuadPart);
+        elapsedTime = static_cast<double>((T1.QuadPart - T0.QuadPart)) / static_cast<double>(F.QuadPart);
         T0 = T1;
         if (this->escena.game_stage != 0)
         {
-            this->time -= static_cast<float>(elapsed_time);
+            this->time -= static_cast<float>(elapsedTime);
         }
 
-        frame_time += static_cast<float>(elapsed_time);
+        if (this->demoMode)
+        {
+            this->totalFrames = this->totalFrames < MAXINT ? this->totalFrames + 1 : 0;
+            this->escena.setTotalFrames(this->totalFrames);
+        }
+
+        frame_time += static_cast<float>(elapsedTime);
         this->escena.time = this->time;
-        this->escena.elapsed_time = static_cast<float>(elapsed_time);
+        this->escena.elapsed_time = static_cast<float>(elapsedTime);
         if (frame_time > 1)
         {
             this->escena.fps = cant_frames / frame_time;
@@ -117,12 +129,13 @@ void ChildView::RenderLoop()
             cant_frames = 0;
         }
 
-        this->MoveCameraWithMouse(cero, movimientoHorizontal, movimientoVertical);
-        this->MoveCameraWithKeyboard(elapsed_time);
+        this->MoveCameraWithMouse(cero, movimientoHorizontal, movimientoVertical, elapsedTime);
+        this->MoveCameraWithKeyboard(elapsedTime);
         this->SetFiltroWithKeyboard();
-        this->escena.lookFrom.x = clamp256(static_cast<float>(this->escena.lookFrom.x));
-        this->escena.lookFrom.y = clamp256(static_cast<float>(this->escena.lookFrom.y));
-        this->escena.lookFrom.z = clamp256(static_cast<float>(this->escena.lookFrom.z));
+        this->SetDemoMode();
+        this->escena.lookFrom.x = this->Clamp256(static_cast<float>(this->escena.lookFrom.x));
+        this->escena.lookFrom.y = this->Clamp256(static_cast<float>(this->escena.lookFrom.y));
+        this->escena.lookFrom.z = this->Clamp256(static_cast<float>(this->escena.lookFrom.z));
 
         this->escena.Render();
         ++cant_frames;
@@ -184,6 +197,11 @@ void ChildView::RenderLoop()
 
 void ChildView::SetFiltroWithKeyboard()
 {
+    if (this->demoMode && this->totalFrames % 60 == 0)
+    {
+        this->escena.filtro = this->escena.filtro == 0 ? 1 : 0;
+    }
+
     if (GetAsyncKeyState('F'))
     {
         if (this->filterKeyPressed == false)
@@ -198,44 +216,114 @@ void ChildView::SetFiltroWithKeyboard()
     }
 }
 
-void ChildView::MoveCameraWithKeyboard(double elapsed_time)
+void ChildView::SetDemoMode()
 {
-    if (GetAsyncKeyState('W'))
+    if (GetAsyncKeyState(VK_SPACE))
     {
-        this->escena.lookFrom = this->escena.lookFrom + this->escena.viewDir*(static_cast<float>(elapsed_time)*this->escena.vel_tras);
+        if (this->_demoKeyPressed == false)
+        {
+            this->_demoKeyPressed = true;
+            this->demoMode = this->demoMode == true ? false : true;
+            this->escena.setDemoMode(this->demoMode);
+        }
     }
-
-    if (GetAsyncKeyState('S'))
+    else
     {
-        this->escena.lookFrom = this->escena.lookFrom - this->escena.viewDir*(static_cast<float>(elapsed_time)*this->escena.vel_tras);
+        this->_demoKeyPressed = false;
     }
 }
 
-void ChildView::MoveCameraWithMouse(vec3 &cero, long double &movimientoHorizontal, long double &movimientoVertical)
+void ChildView::MoveCameraWithKeyboard(double elapsed_time)
+{
+    if (this->demoMode)
+    {
+        if ((int)this->totalFrames % 90 == 0)
+        {
+            this->moveForeward = !this->moveForeward;
+        }
+        if (this->moveForeward)
+        {
+            this->escena.lookFrom = this->escena.lookFrom + this->escena.viewDir*(static_cast<float>(elapsed_time)*this->escena.vel_tras);
+        }
+        else
+        {
+            this->escena.lookFrom = this->escena.lookFrom - this->escena.viewDir*(static_cast<float>(elapsed_time)*this->escena.vel_tras);
+        }
+    }
+    else
+    {
+        if (GetAsyncKeyState('W'))
+        {
+            this->escena.lookFrom = this->escena.lookFrom + this->escena.viewDir*(static_cast<float>(elapsed_time)*this->escena.vel_tras);
+        }
+
+        if (GetAsyncKeyState('S'))
+        {
+            this->escena.lookFrom = this->escena.lookFrom - this->escena.viewDir*(static_cast<float>(elapsed_time)*this->escena.vel_tras);
+        }
+    }
+}
+
+void ChildView::MoveCameraWithMouse(vec3 &cero, long double &movimientoHorizontal, long double &movimientoVertical, double elapsedTime)
 {
     GetCursorPos(this->newCursorPosition);
     cero = vec3(0, 0, 0);
     movimientoHorizontal = 0.l;
     movimientoVertical = 0.l;
-    if ((this->newCursorPosition->x - this->oldCursorPosition->x) != 0 || (this->newCursorPosition->y - this->oldCursorPosition->y) != 0)
+    if (this->demoMode)
     {
-        movimientoHorizontal = this->oldCursorPosition->x - this->newCursorPosition->x;
-        if (movimientoHorizontal != 0)
+        if ((int)this->totalFrames % 90 == 0)
         {
-            movimientoHorizontal /= sensibilidad;
-            this->escena.viewDir.rotar(cero, this->escena.U, static_cast<float>(movimientoHorizontal));
-            this->escena.V.rotar(cero, this->escena.U, static_cast<float>(movimientoHorizontal));
+            this->mouseDemoSignal = this->mouseDemoSignal < 4 ? this->mouseDemoSignal + 1 : 0;
         }
 
-        movimientoVertical = this->oldCursorPosition->y - this->newCursorPosition->y;
-        if (movimientoVertical != 0)
+        switch (this->mouseDemoSignal)
         {
-            movimientoVertical /= sensibilidad;
-            this->escena.viewDir.rotar(cero, this->escena.V, static_cast<float>(movimientoVertical));
-            this->escena.U.rotar(cero, this->escena.V, static_cast<float>(movimientoVertical));
+        case 0:
+            movimientoVertical = elapsedTime;
+            movimientoHorizontal = 0;
+            break;
+        case 1:
+            movimientoVertical = 0;
+            movimientoHorizontal = elapsedTime;
+            break;
+        case 2:
+            movimientoVertical = -elapsedTime;
+            movimientoHorizontal = 0;
+            break;
+        case 3:
+            movimientoVertical = 0;
+            movimientoHorizontal = -elapsedTime;
+            break;
         }
 
-        SetCursorPos(this->escena.fbWidth / 2, this->escena.fbHeight / 2);
-        GetCursorPos(this->oldCursorPosition);
+        this->escena.viewDir.rotar(cero, this->escena.U, static_cast<float>(movimientoHorizontal));
+        this->escena.V.rotar(cero, this->escena.U, static_cast<float>(movimientoHorizontal));
+        this->escena.viewDir.rotar(cero, this->escena.V, static_cast<float>(movimientoVertical));
+        this->escena.U.rotar(cero, this->escena.V, static_cast<float>(movimientoVertical));
+    }
+    else
+    {
+        if ((this->newCursorPosition->x - this->oldCursorPosition->x) != 0 || (this->newCursorPosition->y - this->oldCursorPosition->y) != 0)
+        {
+            movimientoHorizontal = this->oldCursorPosition->x - this->newCursorPosition->x;
+            if (movimientoHorizontal != 0)
+            {
+                movimientoHorizontal /= sensibilidad;
+                this->escena.viewDir.rotar(cero, this->escena.U, static_cast<float>(movimientoHorizontal));
+                this->escena.V.rotar(cero, this->escena.U, static_cast<float>(movimientoHorizontal));
+            }
+
+            movimientoVertical = this->oldCursorPosition->y - this->newCursorPosition->y;
+            if (movimientoVertical != 0)
+            {
+                movimientoVertical /= sensibilidad;
+                this->escena.viewDir.rotar(cero, this->escena.V, static_cast<float>(movimientoVertical));
+                this->escena.U.rotar(cero, this->escena.V, static_cast<float>(movimientoVertical));
+            }
+
+            SetCursorPos(this->escena.fbWidth / 2, this->escena.fbHeight / 2);
+            GetCursorPos(this->oldCursorPosition);
+        }
     }
 }

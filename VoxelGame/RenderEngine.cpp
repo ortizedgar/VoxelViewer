@@ -379,7 +379,7 @@ void RenderEngine::RayCasting()
 
 void RenderEngine::FireWeapon()
 {
-    if (GetAsyncKeyState(VK_LBUTTON))
+    if (GetAsyncKeyState(VK_LBUTTON) || (this->_demoMode && this->_totalFrames % 10 == 0))
     {
         if (this->target_hit) {
             this->cant_capturados++;
