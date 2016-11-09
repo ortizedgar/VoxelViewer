@@ -19,7 +19,7 @@ ChildView::ChildView()
     this->newCursorPosition = (LPPOINT)calloc(2, sizeof(this->newCursorPosition));
     this->filterKeyPressed = false;
     this->_demoKeyPressed = false;
-    this->time = 60;
+    this->time = 60 * 3;
     this->demoMode = false;
     this->escena.setDemoMode(this->demoMode);
     this->moveForeward = true;
