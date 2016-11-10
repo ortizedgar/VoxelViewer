@@ -121,6 +121,9 @@ bool RenderEngine::Initialize(HDC hContext_i)
     fbWidth = dims[2];
     fbHeight = dims[3];
 
+	initECG();
+
+
     return true;
 }
 
@@ -526,7 +529,7 @@ void RenderEngine::Release()
 
 void RenderEngine::renderHUD()
 {
-	RenderFullScreenQuad(hud.id);
+	//RenderFullScreenQuad(hud.id);
 
     int px = fbWidth / 2;
     int py = fbHeight / 2;
@@ -582,6 +585,23 @@ void RenderEngine::renderHUD()
     {
         renderText(px - 40, py, "Fire!");
     }
+
+	// ECG
+	glLineWidth(3);
+	glColor3ub(0,255,0);
+	glBegin(GL_LINE_STRIP);
+	for (int i = 0; i <4000; i+=5)
+	{
+		int k = i + time*2000;
+		int px = 50+i/10.;
+		int py = fbHeight - 75 +ECG[k%cant_muestras] * 50;
+		float x0 = 2 * px / (float)fbWidth - 1;
+		float y0 = 1 - 2 * py / (float)fbHeight;
+		glVertex3f(x0, y0, 0);
+	}
+	glEnd();
+
+
 }
 
 bool RenderEngine::CheckTargetHit()
@@ -815,5 +835,25 @@ void RenderEngine::RenderFullScreenQuad(int texId)
 
 	glUseProgramObjectARB(0);
 	glLoadIdentity();
+
+}
+
+
+void RenderEngine::initECG()
+{
+	cant_muestras = 0;
+	FILE *fp = fopen("../media/ecg.dat", "rb");
+	if (!fp)
+		return;
+
+	char buffer[255];
+	while(fgets(buffer,sizeof(buffer),fp)!=NULL)
+	{ 
+		char *p = strchr(buffer, ',');
+		if (p != NULL)
+			ECG[cant_muestras++] = atof(p + 1);
+	}
+
+	fclose(fp);
 
 }

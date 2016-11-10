@@ -54,6 +54,12 @@ public:
 	// imagen presentacion
 	Texture2d pres , hud;
 
+	// ecg
+	int cant_muestras;
+	float ECG[65535];
+	void initECG();
+
+
 
 private:
     void CheckCompilationStatus(GLhandleARB * vs_main);
@@ -68,7 +74,7 @@ private:
     void RenderGame();
     void RenderStartScreen();
 	void RenderFullScreenQuad(int texId);
-    GLhandleARB _vertexShaderRayCasting, _fragmentShaderRayCasting, _rayCastingShaderProgram;
+	GLhandleARB _vertexShaderRayCasting, _fragmentShaderRayCasting, _rayCastingShaderProgram;
     GLhandleARB _vertexShaderTextureVR, _fragmentShaderTextureVR, _textureVRShaderProgram;
 	GLhandleARB _vertexShaderFixed, _fragmentShaderFixed, _fixedShaderProgram;
 
