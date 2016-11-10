@@ -244,3 +244,83 @@ bool Texture::CreateFromTest(int n, int nWidth_i, int nHeight_i, int nSlices_i)
     delete[] pRGBABuffer;
     return true;
 }
+
+
+Texture2d::Texture2d()
+{
+	id = dx = dy = 0;
+}
+
+Texture2d::~Texture2d()
+{
+	if (id != 0)
+	{
+		glDeleteTextures(1, (GLuint*)&id);
+	}
+}
+
+bool Texture2d::CreateFromFile(LPCTSTR lpDataFile_i)
+{
+	FILE *file;
+	BYTE header[54];
+	unsigned int dataPos;
+	unsigned int size;
+	BYTE *data , *rgba;
+
+	USES_CONVERSION;
+	file = fopen(W2A(lpDataFile_i), "rb");
+
+	if (file == NULL)
+	{
+		return false;
+	}
+
+	if (fread(header, 1, 54, file) != 54)
+	{
+		return false;
+	}
+
+	if (header[0] != 'B' || header[1] != 'M')
+	{
+		return false;
+	}
+
+	dataPos = *(int*)&(header[0x0A]);
+	size = *(int*)&(header[0x22]);
+	dx = *(int*)&(header[0x12]);
+	dy = *(int*)&(header[0x16]);
+
+	if (size == NULL)
+		size = dx * dy * 3;
+	if (dataPos == NULL)
+		dataPos = 54;
+
+	data = new BYTE[size];
+	rgba = new BYTE[dx * dy * 4];
+
+	fread(data, 1, size, file);
+
+	// Transformo de BGR a RGBA 
+	int l = dx * dy;
+	for (int i = 0; i<l; ++i)
+	{
+		BYTE b = data[i * 3 + 0];
+		BYTE g = data[i * 3 + 1];
+		BYTE r = data[i * 3 + 2];
+		rgba[i * 4 + 0] = r;
+		rgba[i * 4 + 1] = g;
+		rgba[i * 4 + 2] = b;
+		rgba[i * 4 + 3] = b==255 && g == 0 && r == 255 ? 0 : 255;		// color key
+	}
+
+	fclose(file);
+	glGenTextures(1, (GLuint*)&id);
+	glBindTexture(GL_TEXTURE_2D, id);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, dx, dy, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba);
+
+	delete[] data;
+	delete[] rgba;
+	return true;
+}

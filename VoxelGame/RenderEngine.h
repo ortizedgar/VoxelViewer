@@ -51,6 +51,10 @@ public:
     // Fonts
     Glyph glyphs[255];
 
+	// imagen presentacion
+	Texture2d pres , hud;
+
+
 private:
     void CheckCompilationStatus(GLhandleARB * vs_main);
     char *textFileRead(char *fn);
@@ -65,6 +69,8 @@ private:
     void RenderStartScreen();
     GLhandleARB _vertexShaderRayCasting, _fragmentShaderRayCasting, _rayCastingShaderProgram;
     GLhandleARB _vertexShaderTextureVR, _fragmentShaderTextureVR, _textureVRShaderProgram;
+	GLhandleARB _vertexShaderFixed, _fragmentShaderFixed, _fixedShaderProgram;
+
     bool _demoMode;
     int _totalFrames;
 };

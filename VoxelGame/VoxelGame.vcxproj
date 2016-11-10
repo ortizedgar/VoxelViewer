@@ -244,6 +244,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.gitignore" />
+    <None Include="..\shaders\fixed.fs" />
+    <None Include="..\shaders\fixed.vs" />
     <None Include="..\shaders\ray_casting.fs" />
     <None Include="..\shaders\ray_casting.vs" />
     <None Include="..\shaders\texture_vr.fs" />

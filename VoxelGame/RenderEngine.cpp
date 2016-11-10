@@ -104,6 +104,18 @@ bool RenderEngine::Initialize(HDC hContext_i)
         AfxMessageBox( _T( "Failed to read the data" ));
     }*/
 
+	// Imagen presentacion
+	if (!pres.CreateFromFile(_T("../media/pres.bmp")))
+	{
+		AfxMessageBox(_T("Failed to read pres.bmp"));
+	}
+
+	// Imagen HUD
+	if (!hud.CreateFromFile(_T("../media/hud.bmp")))
+	{
+		AfxMessageBox(_T("Failed to read hud.bmp"));
+	}
+
     GLint dims[4] = { 0 };
     glGetIntegerv(GL_VIEWPORT, dims);
     fbWidth = dims[2];
@@ -215,38 +227,77 @@ void RenderEngine::RenderGame()
 
 void RenderEngine::RenderStartScreen()
 {
-    auto xPosition = this->fbWidth / 2;
-    auto yPosition = this->fbHeight / 8;
-    char *mensaje = "Vexplorer!";
-    this->RenderTitleText(xPosition / 2, &yPosition, mensaje);
-    mensaje = "Bienvenido a Vexplorer!";
-    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
-    mensaje = "Un videojuego de exploracion 3D. El objetivo es";
-    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
-    mensaje = "eliminar todas las esferas rojas posibles";
-    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
-    mensaje = "antes que se agote el tiempo.";
-    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
-    mensaje = "Controles:";
-    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
-    mensaje = "W - Avanzar";
-    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
-    mensaje = "S - Retroceder";
-    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
-    mensaje = "Mouse - Mirar";
-    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
-    mensaje = "Boton izquierdo - Disparar arma";
-    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
-    mensaje = "F - Encender/Apagar filtro";
-    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
-    mensaje = "Presione cualquier tecla para comenzar!";
-    this->RenderStartText(xPosition / 8, &yPosition, mensaje);
+
+	
+	// pantalla de presentacion
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.5f);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glUseProgramObjectARB(this->_fixedShaderProgram);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, pres.id);
+
+	GLint texLoc = glGetUniformLocation(this->_fixedShaderProgram, "s_texture0");
+	glUniform1i(texLoc, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+	glBegin(GL_QUADS);
+
+	glTexCoord2f(0, 0);
+	glVertex3f(-1 , -1, 0);
+
+	glTexCoord2f(1, 0);
+	glVertex3f(1 , -1 , 0);
+
+	glTexCoord2f(1, 1);
+	glVertex3f(1 , 1, 0);
+
+	glTexCoord2f(0, 1);
+	glVertex3f(-1 , 1 , 0);
+
+	glEnd();
+
+	glUseProgramObjectARB(0);
+	glLoadIdentity();
+	
+	auto xPosition = this->fbWidth / 2;
+	auto yPosition = this->fbHeight / 8;
+	char *mensaje = "Vexplorer!";
+	this->RenderTitleText(xPosition / 2, &yPosition, mensaje);
+	mensaje = "Bienvenido a Vexplorer!";
+	this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
+	mensaje = "Un videojuego de exploracion 3D. El objetivo es";
+	this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
+	mensaje = "eliminar todas las esferas rojas posibles";
+	this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
+	mensaje = "antes que se agote el tiempo.";
+	this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
+	mensaje = "Controles:";
+	this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
+	mensaje = "W - Avanzar";
+	this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
+	mensaje = "S - Retroceder";
+	this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
+	mensaje = "Mouse - Mirar";
+	this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
+	mensaje = "Boton izquierdo - Disparar arma";
+	this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
+	mensaje = "F - Encender/Apagar filtro";
+	this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
+	mensaje = "Presione cualquier tecla para comenzar!";
+	this->RenderStartText(xPosition / 8, &yPosition, mensaje);
+
+
 }
 
 void RenderEngine::RenderTitleText(unsigned int xPosition, int *yPosition, char * mensaje)
 {
     glLineWidth(0);
-    glColor4f(1.f, 0.0f, 0.f, 0.f);
+    glColor4f(1.f, 0.0f, 0.f, 1.f);
     this->renderText(0.0017f, xPosition, *yPosition, mensaje);
     *yPosition += 50;
 }
@@ -254,7 +305,7 @@ void RenderEngine::RenderTitleText(unsigned int xPosition, int *yPosition, char 
 void RenderEngine::RenderStartText(unsigned int xPosition, int *yPosition, char * mensaje)
 {
     glLineWidth(0);
-    glColor4f(1.f, 1.0f, 0.f, 0.f);
+    glColor4f(1.f, 1.0f, 0.f, 1.f);
     this->renderText(0.0017f, xPosition, *yPosition, mensaje);
     *yPosition += 50;
 }
@@ -262,7 +313,7 @@ void RenderEngine::RenderStartText(unsigned int xPosition, int *yPosition, char 
 void RenderEngine::RenderExplanationText(unsigned int xPosition, int *yPosition, char * mensaje)
 {
     glLineWidth(0);
-    glColor4f(1.f, 1.0f, 1.f, 0.f);
+    glColor4f(1.f, 1.0f, 1.f, 1.f);
     this->renderText(0.0017f, xPosition, *yPosition, mensaje);
     *yPosition += 50;
 }
@@ -509,6 +560,42 @@ void RenderEngine::Release()
 
 void RenderEngine::renderHUD()
 {
+
+	// pantalla de presentacion
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.5f);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glUseProgramObjectARB(this->_fixedShaderProgram);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, hud.id);
+
+	GLint texLoc = glGetUniformLocation(this->_fixedShaderProgram, "s_texture0");
+	glUniform1i(texLoc, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+	glBegin(GL_QUADS);
+
+	glTexCoord2f(0, 0);
+	glVertex3f(-1, -1, 0);
+
+	glTexCoord2f(1, 0);
+	glVertex3f(1, -1, 0);
+
+	glTexCoord2f(1, 1);
+	glVertex3f(1, 1, 0);
+
+	glTexCoord2f(0, 1);
+	glVertex3f(-1, 1, 0);
+
+	glEnd();
+
+	glUseProgramObjectARB(0);
+	glLoadIdentity();
+
     int px = fbWidth / 2;
     int py = fbHeight / 2;
     int r = this->CheckTargetHit() ? 80 : 40;
@@ -719,6 +806,14 @@ void RenderEngine::setShaders()
     this->loadShaders(vertexShaderSourceCode, fragmentShaderSourceCode, &_vertexShaderTextureVR, &_fragmentShaderTextureVR, &_textureVRShaderProgram);
     free(vertexShaderSourceCode);
     free(fragmentShaderSourceCode);
+
+	// Shaders fixed pipeline
+	vertexShaderSourceCode = this->textFileRead("../shaders/fixed.vs");
+	fragmentShaderSourceCode = this->textFileRead("../shaders/fixed.fs");
+	this->loadShaders(vertexShaderSourceCode, fragmentShaderSourceCode, &_vertexShaderFixed, &_fragmentShaderFixed, &_fixedShaderProgram);
+	free(vertexShaderSourceCode);
+	free(fragmentShaderSourceCode);
+
 }
 
 char *RenderEngine::textFileRead(char *fn)

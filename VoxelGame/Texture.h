@@ -31,3 +31,14 @@ public:
 private:
     int _dx, _dy, _dz, _id, _anomalies, _anomalieRadius;
 };
+
+
+class Texture2d
+{
+public:
+	Texture2d();
+	virtual ~Texture2d();
+	bool CreateFromFile(LPCTSTR lpDataFile_i);
+	int dx, dy;
+	int id;
+};
