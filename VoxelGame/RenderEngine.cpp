@@ -228,42 +228,8 @@ void RenderEngine::RenderGame()
 void RenderEngine::RenderStartScreen()
 {
 
-	
-	// pantalla de presentacion
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.5f);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	RenderFullScreenQuad(pres.id);
 
-	glUseProgramObjectARB(this->_fixedShaderProgram);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, pres.id);
-
-	GLint texLoc = glGetUniformLocation(this->_fixedShaderProgram, "s_texture0");
-	glUniform1i(texLoc, 0);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-
-	glBegin(GL_QUADS);
-
-	glTexCoord2f(0, 0);
-	glVertex3f(-1 , -1, 0);
-
-	glTexCoord2f(1, 0);
-	glVertex3f(1 , -1 , 0);
-
-	glTexCoord2f(1, 1);
-	glVertex3f(1 , 1, 0);
-
-	glTexCoord2f(0, 1);
-	glVertex3f(-1 , 1 , 0);
-
-	glEnd();
-
-	glUseProgramObjectARB(0);
-	glLoadIdentity();
-	
 	auto xPosition = this->fbWidth / 2;
 	auto yPosition = this->fbHeight / 8;
 	char *mensaje = "Vexplorer!";
@@ -560,41 +526,7 @@ void RenderEngine::Release()
 
 void RenderEngine::renderHUD()
 {
-
-	// pantalla de presentacion
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.5f);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glUseProgramObjectARB(this->_fixedShaderProgram);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, hud.id);
-
-	GLint texLoc = glGetUniformLocation(this->_fixedShaderProgram, "s_texture0");
-	glUniform1i(texLoc, 0);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-
-	glBegin(GL_QUADS);
-
-	glTexCoord2f(0, 0);
-	glVertex3f(-1, -1, 0);
-
-	glTexCoord2f(1, 0);
-	glVertex3f(1, -1, 0);
-
-	glTexCoord2f(1, 1);
-	glVertex3f(1, 1, 0);
-
-	glTexCoord2f(0, 1);
-	glVertex3f(-1, 1, 0);
-
-	glEnd();
-
-	glUseProgramObjectARB(0);
-	glLoadIdentity();
+	RenderFullScreenQuad(hud.id);
 
     int px = fbWidth / 2;
     int py = fbHeight / 2;
@@ -844,4 +776,44 @@ char *RenderEngine::textFileRead(char *fn)
     }
 
     return content;
+}
+
+
+void RenderEngine::RenderFullScreenQuad(int texId)
+{
+	// pantalla de presentacion
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.5f);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glUseProgramObjectARB(this->_fixedShaderProgram);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texId);
+
+	GLint texLoc = glGetUniformLocation(this->_fixedShaderProgram, "s_texture0");
+	glUniform1i(texLoc, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+	glBegin(GL_QUADS);
+
+	glTexCoord2f(0, 0);
+	glVertex3f(-1, -1, 0);
+
+	glTexCoord2f(1, 0);
+	glVertex3f(1, -1, 0);
+
+	glTexCoord2f(1, 1);
+	glVertex3f(1, 1, 0);
+
+	glTexCoord2f(0, 1);
+	glVertex3f(-1, 1, 0);
+
+	glEnd();
+
+	glUseProgramObjectARB(0);
+	glLoadIdentity();
+
 }

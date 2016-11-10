@@ -67,6 +67,7 @@ private:
     void RenderEndScreen();
     void RenderGame();
     void RenderStartScreen();
+	void RenderFullScreenQuad(int texId);
     GLhandleARB _vertexShaderRayCasting, _fragmentShaderRayCasting, _rayCastingShaderProgram;
     GLhandleARB _vertexShaderTextureVR, _fragmentShaderTextureVR, _textureVRShaderProgram;
 	GLhandleARB _vertexShaderFixed, _fragmentShaderFixed, _fixedShaderProgram;
