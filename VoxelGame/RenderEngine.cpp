@@ -355,27 +355,6 @@ void RenderEngine::RayCasting()
         //sprintf_s(saux,"ViewDir =(%.3f,%.3f,%.3f)  UP=(%.3f,%.3f,%.3f",viewDir.x,viewDir.y,viewDir.z ,U.x,U.y,U.z);
         //renderText(10,50,saux);
     }
-    else
-    {
-        sprintf_s(saux, "Voxel Game fps = %.1f", this->fps);
-        renderText(10, 10, saux);
-        sprintf_s(saux, "SCORE :  %04d", this->cant_capturados * 100);
-        renderText(10, 40, saux);
-
-        // Time
-        sprintf_s(saux, "%02d:%02d", (int)(time / 60), ((int)time) % 60);
-        glLineWidth(6);
-        glColor4f(1, 1, 1, 0.25);
-        this->renderText(0.003f, fbWidth - 450, fbHeight - 120, "Time Limit");
-
-        glColor4f(1, 1, 1, 0.5f);
-        this->renderText(0.005f, fbWidth - 350, fbHeight - 100, saux);
-
-        glLineWidth(2);
-        glColor4f(1, 1, 1, 1);
-        this->renderText(0.005f, fbWidth - 350, fbHeight - 100, saux);
-    }
-
     this->target_hit = false;
 
     // Verifico si pasa sobre un objetivo
@@ -462,8 +441,9 @@ void RenderEngine::TextureVR()
     // Escalo y roto con respecto al centro del cubo 
     glTranslatef(0.5f, 0.5f, 0.5f);
     auto E = 1.f;
-    glScaled(E, 1.0f*(float)tex.dx() / (float)tex.dy()*E, (float)tex.dx() / (float)tex.dz()*E);
-    //mat4 transform = mat4::RotateX(an_x) * mat4::RotateY(an_y) * mat4::RotateZ(an_z);
+	//glScaled(E, (float)tex.dy()/(float)tex.dx()  *E, (float)tex.dx() / (float)tex.dz()*E);
+	//glScaled(0.5,1,1);
+	//mat4 transform = mat4::RotateX(an_x) * mat4::RotateY(an_y) * mat4::RotateZ(an_z);
     //mat4 transform = mat4::fromBase(viewDir , U,V);
     auto t = time*0.1f;
     auto transform = mat4::RotateX(t) * mat4::RotateY(t) * mat4::RotateZ(t);
@@ -489,8 +469,9 @@ void RenderEngine::TextureVR()
 
     auto TexIndex = 0.f;
     auto s = 0.f;
-    auto d = 0.f;
-    for (auto fIndx = -1.0f; fIndx <= 1.0f; fIndx += 0.05f)
+	auto d = 0.f;
+	auto q = 0.25f;
+	for (auto fIndx = -1.0f; fIndx <= 1.0f; fIndx += 0.05f)
     {
         glBegin(GL_QUADS);
         TexIndex = fIndx;
@@ -498,16 +479,16 @@ void RenderEngine::TextureVR()
         d = 1.25f;
 
         glTexCoord3f(0, 0, ((float)TexIndex + 1.0f) / 2.0f);
-        glVertex3f(-1 + s + d, -1 + s + d, TexIndex);
+        glVertex3f(-1 + s + d + q, -1 + s + d, TexIndex);
 
         glTexCoord3f(1, 0, ((float)TexIndex + 1.0f) / 2.0f);
-        glVertex3f(1 - s, -1 + s + d, TexIndex);
+        glVertex3f(1 - s , -1 + s + d, TexIndex);
 
         glTexCoord3f(1, 1, ((float)TexIndex + 1.0f) / 2.0f);
-        glVertex3f(1 - s, 1 - s, TexIndex);
+        glVertex3f(1 - s , 1 - s, TexIndex);
 
         glTexCoord3f(0, 1, ((float)TexIndex + 1.0f) / 2.0f);
-        glVertex3f(-1 + s + d, 1 - s, TexIndex);
+        glVertex3f(-1 + s + d + q, 1 - s, TexIndex);
 
         glEnd();
     }
@@ -530,6 +511,17 @@ void RenderEngine::Release()
 void RenderEngine::renderHUD()
 {
 	//RenderFullScreenQuad(hud.id);
+	// preview craneo
+	renderGradientRoundRect(960, 5, 310, 280, 50,50);
+	// time
+	renderGradientRoundRect(820, 580, 450, 150, 150,50);
+	// electro
+	renderGradientRoundRect2(5, 580, 400, 150, 150, 50);
+	// intermedio (sin usar)
+	renderGradientRoundRect(413, 630, 400, 100, 0, 0);
+	// score
+	renderGradientRoundRect2(5, 5, 550, 80, 50, 30);
+
 
     int px = fbWidth / 2;
     int py = fbHeight / 2;
@@ -588,12 +580,16 @@ void RenderEngine::renderHUD()
 
 	// ECG
 	glLineWidth(3);
-	glColor3ub(0,255,0);
+	glColor4f(1, 1, 1, 0.25);
+	this->renderText(0.0012f, 10, fbHeight - 120, "Electro Cardiograma");
+
+	glLineWidth(3);
+	glColor3ub(150,255,150);
 	glBegin(GL_LINE_STRIP);
 	for (int i = 0; i <4000; i+=5)
 	{
 		int k = i + time*2000;
-		int px = 50+i/10.;
+		int px = 50+i/12.;
 		int py = fbHeight - 75 +ECG[k%cant_muestras] * 50;
 		float x0 = 2 * px / (float)fbWidth - 1;
 		float y0 = 1 - 2 * py / (float)fbHeight;
@@ -602,12 +598,35 @@ void RenderEngine::renderHUD()
 	glEnd();
 
 
+	
+	// fps y time
+	char saux[40];
+	sprintf_s(saux, "SCORE :  %04d", this->cant_capturados * 100);
+	renderText(10, 10, saux);
+	sprintf_s(saux, "Voxel Game fps = %.1f", this->fps);
+	renderText(10, 40, saux);
+
+	// Time
+	sprintf_s(saux, "%02d:%02d", (int)(time / 60), ((int)time) % 60);
+	glLineWidth(6);
+	glColor4f(1, 1, 1, 0.25);
+	this->renderText(0.0025f, fbWidth - 400, fbHeight - 120, "Time Limit");
+
+	glColor4f(1, 1, 1, 0.5f);
+	this->renderText(0.005f, fbWidth - 350, fbHeight - 100, saux);
+
+	glLineWidth(2);
+	glColor4f(1, 1, 1, 1);
+	this->renderText(0.005f, fbWidth - 350, fbHeight - 100, saux);
+
+
 }
 
 bool RenderEngine::CheckTargetHit()
 {
     return this->target_hit && this->filtro == 0;
 }
+
 
 void RenderEngine::renderCircle(int px, int py, int r)
 {
@@ -627,6 +646,175 @@ void RenderEngine::renderCircle(int px, int py, int r)
 
     glEnd();
 }
+
+
+
+void RenderEngine::renderGradientRect(int px0, int py0, int dx, int dy)
+{
+	// clear rect
+	glColor3ub(0, 0, 0);
+	renderRect(px0, py0, dx, dy);
+
+	int px1 = px0 + dx;
+	int py1 = py0 + dy;
+
+	float x0 = 2 * px0 / (float)fbWidth - 1;
+	float y0 = 1 - 2 * py0 / (float)fbHeight;
+	float x1 = 2 * px1 / (float)fbWidth - 1;
+	float y1 = 1 - 2 * py1 / (float)fbHeight;
+
+	glColor3ub(42, 226, 228);
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(x0, y0, 0);
+	glVertex3f(x1, y0, 0);
+	glVertex3f(x1, y1, 0);
+	glVertex3f(x0, y1, 0);
+	glVertex3f(x0, y0, 0);
+	glEnd();
+
+	
+}
+
+
+void RenderEngine::renderGradientRoundRect(int px0, int py0, int dx, int dy, int prx, int pry)
+{
+	// clear rect
+	glColor3ub(0, 0, 0);
+	renderRect(px0 + prx, py0, dx-prx, dy);
+	renderRect(px0, py0+pry, prx, dy-pry);
+
+	int px1 = px0 + dx;
+	int py1 = py0 + dy;
+
+	float x0 = 2 * px0 / (float)fbWidth - 1;
+	float y0 = 1 - 2 * py0 / (float)fbHeight;
+	float x1 = 2 * px1 / (float)fbWidth - 1;
+	float y1 = 1 - 2 * py1 / (float)fbHeight;
+	float rx = 2 * prx / (float)fbWidth;
+	float ry = 2 * pry / (float)fbHeight;
+
+	// clear tri
+	glBegin(GL_TRIANGLES);
+	glVertex3f(x0, y0-ry, 0);
+	glVertex3f(x0+rx, y0, 0);
+	glVertex3f(x0+rx, y0-ry, 0);
+	glEnd();
+
+	// draw lines
+	glLineWidth(12);
+	glColor4ub(32, 177, 179, 40);
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(x0, y0 - ry, 0);
+	glVertex3f(x0 + rx, y0, 0);
+	glVertex3f(x1, y0, 0);
+	glVertex3f(x1, y1, 0);
+	glVertex3f(x0, y1, 0);
+	glVertex3f(x0, y0 - ry, 0);
+	glEnd();
+	glLineWidth(8);
+	glColor4ub(32, 177, 179, 100);
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(x0, y0 - ry, 0);
+	glVertex3f(x0 + rx, y0, 0);
+	glVertex3f(x1, y0, 0);
+	glVertex3f(x1, y1, 0);
+	glVertex3f(x0, y1, 0);
+	glVertex3f(x0, y0 - ry, 0);
+	glEnd();
+
+	glLineWidth(2);
+	glColor3ub(42, 226, 228);
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(x0, y0 - ry, 0);
+	glVertex3f(x0 + rx, y0, 0);
+	glVertex3f(x1, y0, 0);
+	glVertex3f(x1, y1, 0);
+	glVertex3f(x0, y1, 0);
+	glVertex3f(x0, y0 - ry, 0);
+	glEnd();
+
+}
+
+
+void RenderEngine::renderGradientRoundRect2(int px0, int py0, int dx, int dy, int prx, int pry)
+{
+	// clear rect
+	glColor3ub(0, 0, 0);
+	renderRect(px0, py0, dx - prx, dy);
+	renderRect(px0+dx-prx, py0 + pry, prx, dy - pry);
+
+	int px1 = px0 + dx;
+	int py1 = py0 + dy;
+
+	float x0 = 2 * px0 / (float)fbWidth - 1;
+	float y0 = 1 - 2 * py0 / (float)fbHeight;
+	float x1 = 2 * px1 / (float)fbWidth - 1;
+	float y1 = 1 - 2 * py1 / (float)fbHeight;
+	float rx = 2 * prx / (float)fbWidth;
+	float ry = 2 * pry / (float)fbHeight;
+
+	// clear tri
+	glBegin(GL_TRIANGLES);
+	glVertex3f(x1-rx , y0, 0);
+	glVertex3f(x1, y0-ry, 0);
+	glVertex3f(x1-rx, y0 - ry, 0);
+	glEnd();
+
+	// draw lines
+	glLineWidth(12);
+	glColor4ub(32, 177, 179, 40);
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(x0, y0, 0);
+	glVertex3f(x1 - rx, y0, 0);
+	glVertex3f(x1, y0-ry, 0);
+	glVertex3f(x1, y1, 0);
+	glVertex3f(x0, y1, 0);
+	glVertex3f(x0, y0, 0);
+	glEnd();
+	
+	glLineWidth(2);
+	glColor3ub(42, 226, 228);
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(x0, y0, 0);
+	glVertex3f(x1 - rx, y0, 0);
+	glVertex3f(x1, y0 - ry, 0);
+	glVertex3f(x1, y1, 0);
+	glVertex3f(x0, y1, 0);
+	glVertex3f(x0, y0, 0);
+	glEnd();
+
+	glLineWidth(8);
+	glColor4ub(32, 177, 179, 100);
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(x0, y0, 0);
+	glVertex3f(x1 - rx, y0, 0);
+	glVertex3f(x1, y0 - ry, 0);
+	glVertex3f(x1, y1, 0);
+	glVertex3f(x0, y1, 0);
+	glVertex3f(x0, y0, 0);
+	glEnd();
+
+}
+
+void RenderEngine::renderLine(int px0, int py0, int px1, int py1,BYTE r, BYTE g, BYTE b)
+{
+
+	glColor3ub(r, g , b);
+
+	float x0 = 2 * px0 / (float)fbWidth - 1;
+	float y0 = 1 - 2 * py0 / (float)fbHeight;
+	float x1 = 2 * px1 / (float)fbWidth - 1;
+	float y1 = 1 - 2 * py1 / (float)fbHeight;
+
+	glBegin(GL_TRIANGLE_STRIP);
+	glVertex3f(x0, y0, 0);
+	glVertex3f(x1, y0, 0);
+	glVertex3f(x0, y1, 0);
+	glVertex3f(x1, y1, 0);
+	glEnd();
+
+}
+
 
 void RenderEngine::renderRect(int px0, int py0, int dx, int dy)
 {

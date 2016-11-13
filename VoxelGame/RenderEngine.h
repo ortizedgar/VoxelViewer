@@ -22,7 +22,11 @@ public:
     void renderText(int px, int py, char *text);
     void renderText(float k, int px, int py, char *text);
     void renderCircle(int px, int py, int r);
-    void renderRect(int px0, int py0, int dx, int d1);
+	void renderGradientRect(int px0, int py0, int dx, int dy);
+	void renderGradientRoundRect(int px0, int py0, int dx, int dy, int prx , int pry);
+	void renderGradientRoundRect2(int px0, int py0, int dx, int dy, int prx, int pry);
+	void renderLine(int px0, int py0, int px1, int py1, BYTE r, BYTE g, BYTE b);
+	void renderRect(int px0, int py0, int dx, int d1);
     void renderHUD();
     void setDemoMode(bool demoMode) { this->_demoMode = demoMode; }
     void setTotalFrames(int totalFrames) { this->_totalFrames = totalFrames; }

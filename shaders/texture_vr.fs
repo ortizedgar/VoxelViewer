@@ -21,34 +21,6 @@ vec4 transfer(float I)
 
 void main()
 {
-    /*
-    vec3 pos_anomalia = vec3(0,0,0);
-    vec3 q = (vTexCoord-0.5)* 256;
-    float s = dot(q-pos,iViewDir);
-    float dist = length(pos + iViewDir*s - q);
-    if( s>=0 && s<75 && dist <5)
-    {
-        gl_FragColor = vec4(0.5,0.5,1,1);
-    }
-    else
-    {
-        dist = length(pos-q);
-        if( dist<10)
-            gl_FragColor = vec4(0.5,0.5,1,1-dist/10);
-        else
-        {
-            dist = length(pos_anomalia-q);
-            if( dist<10)
-                gl_FragColor = vec4(1,0.5,0.5,1-dist/10);
-            else
-            {
-                gl_FragColor = texture3D(s_texture0, vTexCoord);
-            //    gl_FragColor.a *= gl_FragColor.a;
-                gl_FragColor.a *= gl_FragColor.a * 0.1;
-            }
-        }
-    }
-    */
 
     vec3 q = (vTexCoord-0.5)* 256;
     float s = dot(q-pos,iViewDir);
@@ -64,11 +36,33 @@ void main()
             gl_FragColor = vec4(0.5,0.5,1,1-dist/10);
         else
         {
-            gl_FragColor = texture3D(s_texture0, vTexCoord);
-            if(gl_FragColor.r>0.9)
-                gl_FragColor.a = 0.07;
-            else
-                gl_FragColor.a *= gl_FragColor.a * 0.1;
+            float3 clr  = texture3D(s_texture0, vTexCoord);
+            float k = clr.g;		// intensidad
+			if(k<0.01)
+				discard;
+
+			if(clr.r>0.7 && clr.g+clr.b<0.5)
+			{
+				// anomalia
+				gl_FragColor.rgb = clr;
+				gl_FragColor.a = 0.35;
+				
+			}
+			else
+			{	
+				// tejido normal
+				if(k>0.9)
+					gl_FragColor.a = 0.07;
+				else
+					gl_FragColor.a = k*k* 0.2;
+					
+				gl_FragColor.r = 45.0/255.0 * k * 1.5;
+				gl_FragColor.g = 229.0/255.0 * k* 1.5;
+				gl_FragColor.b = 237.0/255.0 * k* 1.5;
+				
+			}
+				
+				
         }
     }
 }
