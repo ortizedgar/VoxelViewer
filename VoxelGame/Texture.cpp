@@ -259,7 +259,7 @@ Texture2d::~Texture2d()
 	}
 }
 
-bool Texture2d::CreateFromFile(LPCTSTR lpDataFile_i)
+bool Texture2d::CreateFromFile(LPCTSTR lpDataFile_i, bool color_key)
 {
 	FILE *file;
 	BYTE header[54];
@@ -296,21 +296,51 @@ bool Texture2d::CreateFromFile(LPCTSTR lpDataFile_i)
 		dataPos = 54;
 
 	data = new BYTE[size];
-	rgba = new BYTE[dx * dy * 4];
+	rgba = new BYTE[dx * dy * 4 ];
 
 	fread(data, 1, size, file);
 
 	// Transformo de BGR a RGBA 
 	int l = dx * dy;
-	for (int i = 0; i<l; ++i)
+	int t = 0;
+	for (int i = 0; t<l; ++i , ++t)
 	{
 		BYTE b = data[i * 3 + 0];
 		BYTE g = data[i * 3 + 1];
 		BYTE r = data[i * 3 + 2];
-		rgba[i * 4 + 0] = r;
-		rgba[i * 4 + 1] = g;
-		rgba[i * 4 + 2] = b;
-		rgba[i * 4 + 3] = b==255 && g == 0 && r == 255 ? 0 : 255;		// color key
+
+		if (color_key)		// usar color key
+		{
+			if(b < 5 && g < 5 && r < 5)
+				rgba[t * 4 + 3] =0;		// color key
+			else
+			{
+				// y la hago monocroma
+				rgba[t * 4 + 0] = 255;		// R
+				rgba[t * 4 + 1] = 255;		// G
+				rgba[t * 4 + 2] = 255;		// B
+
+				rgba[t * 4 + 3] = 255;		// A
+			}
+
+		}
+		else
+		{
+			rgba[t * 4 + 0] = r;
+			rgba[t * 4 + 1] = g;
+			rgba[t * 4 + 2] = b;
+			rgba[t * 4 + 3] = 255;
+
+		}
+
+		int col = i%dx;
+		if (col == dx - 1)		// el ultimo de la linea
+		{
+			int resto;
+			if ((resto = (col % 4))>0 && resto<4)
+				i += (4 - resto) - 1;
+		}
+
 	}
 
 	fclose(file);

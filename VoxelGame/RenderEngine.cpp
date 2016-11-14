@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "RenderEngine.h"
 #include "mat4.h"
+#include "vec4.h"
 #include "math.h"
 
 #include <memory>
@@ -20,9 +21,11 @@ RenderEngine::RenderEngine()
     voxel_step = 0.5;
     voxel_step0 = 75.0;
     vel_tras = 20;
+	max_vel_tras = 80;
     lookFrom = vec3(-80, 0, 0);
     filtro = 0;
     cant_capturados = 0;
+	modo_aceleracion = true;
 }
 
 RenderEngine::~RenderEngine()
@@ -110,8 +113,14 @@ bool RenderEngine::Initialize(HDC hContext_i)
 		AfxMessageBox(_T("Failed to read pres.bmp"));
 	}
 
+	// Imagen de fondo
+	if (!fondo.CreateFromFile(_T("../media/pres_fondo.bmp")))
+	{
+		AfxMessageBox(_T("Failed to read pres_fondo.bmp"));
+	}
+
 	// Imagen HUD
-	if (!hud.CreateFromFile(_T("../media/hud.bmp")))
+	if (!hud.CreateFromFile(_T("../media/hud.bmp") , true))
 	{
 		AfxMessageBox(_T("Failed to read hud.bmp"));
 	}
@@ -206,6 +215,9 @@ void RenderEngine::Render()
 
 void RenderEngine::RenderEndScreen()
 {
+
+	RenderFullScreenQuad(fondo.id);
+
     auto xPosition = this->fbWidth / 2;
     auto yPosition = this->fbHeight / 8;
     char score[5];
@@ -231,8 +243,9 @@ void RenderEngine::RenderGame()
 void RenderEngine::RenderStartScreen()
 {
 
-	RenderFullScreenQuad(pres.id);
+	RenderFullScreenQuad(pres.id );
 
+	/*
 	auto xPosition = this->fbWidth / 2;
 	auto yPosition = this->fbHeight / 8;
 	char *mensaje = "Vexplorer!";
@@ -259,7 +272,7 @@ void RenderEngine::RenderStartScreen()
 	this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
 	mensaje = "Presione cualquier tecla para comenzar!";
 	this->RenderStartText(xPosition / 8, &yPosition, mensaje);
-
+	*/
 
 }
 
@@ -508,6 +521,9 @@ void RenderEngine::Release()
     // falta liberar todo....
 }
 
+
+/*
+// version vieja
 void RenderEngine::renderHUD()
 {
 	//RenderFullScreenQuad(hud.id);
@@ -517,10 +533,11 @@ void RenderEngine::renderHUD()
 	renderGradientRoundRect(820, 580, 450, 150, 150,50);
 	// electro
 	renderGradientRoundRect2(5, 580, 400, 150, 150, 50);
+	
 	// intermedio (sin usar)
-	renderGradientRoundRect(413, 630, 400, 100, 0, 0);
+	//renderGradientRoundRect(413, 630, 400, 100, 0, 0);
 	// score
-	renderGradientRoundRect2(5, 5, 550, 80, 50, 30);
+	//renderGradientRoundRect2(5, 5, 550, 80, 50, 30);
 
 
     int px = fbWidth / 2;
@@ -601,23 +618,224 @@ void RenderEngine::renderHUD()
 	
 	// fps y time
 	char saux[40];
-	sprintf_s(saux, "SCORE :  %04d", this->cant_capturados * 100);
+	// Debug fps
+	sprintf_s(saux, "fps = %.1f", this->fps);
 	renderText(10, 10, saux);
-	sprintf_s(saux, "Voxel Game fps = %.1f", this->fps);
+	// score
+	sprintf_s(saux, "SCORE :  %04d", this->cant_capturados * 100);
 	renderText(10, 40, saux);
 
 	// Time
-	sprintf_s(saux, "%02d:%02d", (int)(time / 60), ((int)time) % 60);
-	glLineWidth(6);
+	glLineWidth(4);
 	glColor4f(1, 1, 1, 0.25);
-	this->renderText(0.0025f, fbWidth - 400, fbHeight - 120, "Time Limit");
+	this->renderText(0.0015f, fbWidth - 400, fbHeight - 120, "Time Limit");
 
 	glColor4f(1, 1, 1, 0.5f);
-	this->renderText(0.005f, fbWidth - 350, fbHeight - 100, saux);
-
+	sprintf_s(saux, "%02d:%02d", (int)(time / 60), ((int)time) % 60);
+	this->renderText(0.0025f, fbWidth - 350, fbHeight - 100, saux);
 	glLineWidth(2);
 	glColor4f(1, 1, 1, 1);
-	this->renderText(0.005f, fbWidth - 350, fbHeight - 100, saux);
+	this->renderText(0.0025f, fbWidth - 350, fbHeight - 100, saux);
+
+
+}
+*/
+
+
+// HUD lateral
+void RenderEngine::renderHUD()
+{
+	// preview craneo
+	renderGradientRoundRect(960, 5, 310, 280, 25, 25);
+	// electro
+	renderGradientRoundRect(960, 300, 310, 100, 0, 0);
+	
+	// scoreboarad aux
+	renderGradientRoundRect2(960, 410, 310, 100, 50, 25);
+	renderGradientRoundRect2(1010, 520, 260, 100, 25, 25);
+
+	char saux[40];
+
+	// Target MIRA
+	int px = fbWidth / 2;
+	int py = fbHeight / 2;
+	int r = this->CheckTargetHit() ? 80 : 40;
+	glColor4ub(0, 113, 192,150);
+	this->renderCircle(px, py, r);
+
+	glColor4ub(0, 143, 222, 255);
+	float x0 = 2 * px / (float)fbWidth - 1;
+	float y0 = 1 - 2 * py / (float)fbHeight;
+	float rx = 2 * (r + 10) / (float)fbWidth;
+	float ry = 2 * (r + 10) / (float)fbHeight;
+
+	glLineWidth(4);
+	glBegin(GL_LINES);
+	glVertex3f(x0 - rx, y0, 0);
+	glVertex3f(x0 - rx*0.25f, y0, 0);
+	glEnd();
+
+	glBegin(GL_LINES);
+	glVertex3f(x0 + rx, y0, 0);
+	glVertex3f(x0 + rx*0.25f, y0, 0);
+	glEnd();
+
+	glBegin(GL_LINES);
+	glVertex3f(x0, y0 - ry, 0);
+	glVertex3f(x0, y0 - ry*0.25f, 0);
+	glEnd();
+
+	glBegin(GL_LINES);
+	glVertex3f(x0, y0 + ry, 0);
+	glVertex3f(x0, y0 + ry*0.25f, 0);
+	glEnd();
+
+	glLineWidth(1);
+	rx *= 0.9f;
+	ry *= 0.9f;
+	auto alfa = 0.f;
+	for (auto an = 0; an <= 360; an += 10)
+	{
+		alfa = an*3.1415f / 180.0f;
+		glBegin(GL_LINES);
+		glVertex3f(x0 + static_cast<float>(rx*cos(alfa)), static_cast<float>(y0 + ry*sin(alfa)), 0);
+		glVertex3f(x0 + static_cast<float>(rx*cos(alfa)*0.9), static_cast<float>(y0 + ry*sin(alfa)*0.9), 0);
+		glEnd();
+	}
+
+	glColor4ub(0, 170, 242, 255);
+	glLineWidth(1);
+	rx *= 3.f;
+	ry *= 3.f;
+	alfa = 0.f;
+	for (auto an = 0; an <= 360; an += 10)
+	{
+		alfa = an*3.1415f / 180.0f;
+		glBegin(GL_LINES);
+		glVertex3f(x0 + static_cast<float>(rx*cos(alfa)), static_cast<float>(y0 + ry*sin(alfa)), 0);
+		glVertex3f(x0 + static_cast<float>(rx*cos(alfa)*0.85), static_cast<float>(y0 + ry*sin(alfa)*0.85), 0);
+		glEnd();
+	}
+
+	if (this->CheckTargetHit())
+	{
+		renderText(px - 40, py, "Fire!");
+	}
+
+	// velocity
+	glLineWidth(3);
+	rx = 2 * (r + 10) / (float)fbWidth;
+	ry = 2 * (r + 10) / (float)fbHeight;
+	float an_hasta = 100 * vel_tras / max_vel_tras;
+	for (auto an = 0; an <= an_hasta; an += 5)
+	{
+		float alfa = (an-90)*3.1415f / 180.0f;
+		if(an<50)
+			glColor4ub(128, 255, 128, 255);
+		else
+		if (an<80)
+			glColor4ub(255, 128, 0, 255);
+		else
+			glColor4ub(255, 0, 0, 255);
+
+		glBegin(GL_LINES);
+		glVertex3f(x0 - static_cast<float>(rx*cos(alfa)), static_cast<float>(y0 + ry*sin(alfa)), 0);
+		glVertex3f(x0 - static_cast<float>(rx*cos(alfa)*0.7), static_cast<float>(y0 + ry*sin(alfa)*0.7), 0);
+		glEnd();
+	}
+
+
+	// loof from
+	int mx = fbWidth / 2;
+	int my = fbHeight / 2;
+	renderLine(mx + 25, my+25, mx + 100, my + 50, 240, 240, 240);
+	renderLine(mx + 100, my + 50, mx + 300, my + 50, 240, 240, 240);
+	renderLine(mx + 300, my + 50, mx + 300, my + 75, 240, 240, 240);
+	renderLine(mx + 300, my + 75, mx + 150, my + 75, 240, 240, 240);
+	renderLine(mx + 150, my + 75, mx + 150, my + 50,240, 240, 240);
+	glLineWidth(1);
+	glColor4f(1, 1, 1, 1);
+	sprintf(saux, "[%d,%d,%d]", (int)lookFrom.x, (int)lookFrom.y, (int)lookFrom.z);
+	renderText(0.00075f, mx + 160 , my + 56, saux);
+
+	// Color promedio
+	renderLine(mx+50, my-50, mx + 100, my - 150, 240, 240, 240);
+	renderLine(mx + 100, my - 150, mx + 250, my - 150, 240, 240, 240);
+	renderLine(mx + 250, my - 150, mx + 250, my - 175, 240, 240, 240);
+	renderLine(mx + 250, my - 175, mx + 150, my - 175, 240, 240, 240);
+	renderLine(mx + 150, my - 175, mx + 150, my - 150, 240, 240, 240);
+	glLineWidth(1);
+	glColor4f(1, 1, 1, 1);
+	sprintf(saux, "I:%d", (int)(mr*255));
+	renderText(0.00075f, mx + 160, my - 170, saux);
+	glColor3f(mr, mg, mb);
+	renderRect(mx + 225, my -174, 24, 24);
+
+
+	// ECG
+	glLineWidth(3);
+	glColor4f(1, 1, 1, 0.25);
+	this->renderText(0.0012f, 970, 320, "EKG");
+
+	glLineWidth(3);
+	glColor3ub(150, 255, 150);
+	glBegin(GL_LINE_STRIP);
+	for (int i = 0; i <3200; i += 5)
+	{
+		int k = i + time * 2000;
+		int px = 970  + i / 12.;
+		int py = 340 + ECG[k%cant_muestras] * 50;
+		float x0 = 2 * px / (float)fbWidth - 1;
+		float y0 = 1 - 2 * py / (float)fbHeight;
+		glVertex3f(x0, y0, 0);
+	}
+	glEnd();
+
+
+
+	// fps y time
+	// Debug fps
+	sprintf_s(saux, "fps = %.1f", this->fps);
+	renderText(10, 10, saux);
+	// score
+	sprintf_s(saux, "SCORE :  %04d", this->cant_capturados * 100);
+	renderText(10, 40, saux);
+
+	// Time
+	glLineWidth(4);
+	glColor4f(1, 1, 1, 0.25);
+	this->renderText(0.0015f, 1020, 530, "Time Limit");
+	glColor4f(1, 1, 1, 0.5f);
+	sprintf_s(saux, "%02d:%02d", (int)(time / 60), ((int)time) % 60);
+	this->renderText(0.0025f, 1030, 550, saux);
+	glLineWidth(2);
+	glColor4f(1, 1, 1, 1);
+	this->renderText(0.0025f, 1030, 550, saux);
+
+
+	// Step0 - cant pasos
+	glLineWidth(4);
+	glColor4f(1, 1, 1, 0.25);
+	this->renderText(0.0015f, 970, 420, "Step0 - st");
+	glColor4f(1, 1, 1, 0.5f);
+	sprintf_s(saux, "%d : %.3f", (int)voxel_step0 ,voxel_step);
+	this->renderText(0.0015f, 980, 440, saux);
+	glLineWidth(2);
+	glColor4f(1, 1, 1, 1);
+	this->renderText(0.0015f, 980, 440, saux);
+
+	//sprintf_s(saux, "vel: %.3f", vel_tras);
+	//this->renderText(0.0015f, 980, 500, saux);
+
+	//if (!modo_aceleracion)
+	{
+		glLineWidth(1);
+		glColor4f(1, 1, 1, 1);
+		this->renderText(0.0012f, mx-150, my-150, modo_aceleracion ? "ACL" : "NAV");
+	}
+
+	RenderQuad(&hud , fbWidth/2 , fbHeight/2 , atan2(viewDir.y, viewDir.x));
+
 
 
 }
@@ -736,7 +954,7 @@ void RenderEngine::renderGradientRoundRect(int px0, int py0, int dx, int dy, int
 }
 
 
-void RenderEngine::renderGradientRoundRect2(int px0, int py0, int dx, int dy, int prx, int pry)
+void RenderEngine::renderGradientRoundRect3(int px0, int py0, int dx, int dy, int prx, int pry)
 {
 	// clear rect
 	glColor3ub(0, 0, 0);
@@ -772,6 +990,18 @@ void RenderEngine::renderGradientRoundRect2(int px0, int py0, int dx, int dy, in
 	glVertex3f(x0, y0, 0);
 	glEnd();
 	
+
+	glLineWidth(8);
+	glColor4ub(32, 177, 179, 100);
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(x0, y0, 0);
+	glVertex3f(x1 - rx, y0, 0);
+	glVertex3f(x1, y0 - ry, 0);
+	glVertex3f(x1, y1, 0);
+	glVertex3f(x0, y1, 0);
+	glVertex3f(x0, y0, 0);
+	glEnd();
+
 	glLineWidth(2);
 	glColor3ub(42, 226, 228);
 	glBegin(GL_LINE_STRIP);
@@ -783,15 +1013,97 @@ void RenderEngine::renderGradientRoundRect2(int px0, int py0, int dx, int dy, in
 	glVertex3f(x0, y0, 0);
 	glEnd();
 
+
+}
+
+
+void RenderEngine::renderGradientRoundRect2(int px0, int py0, int dx, int dy, int prx, int pry)
+{
+	// clear rect
+	glColor3ub(0, 0, 0);
+	renderRect(px0, py0, dx, dy-pry);
+	renderRect(px0 + prx, py0 + dy - pry, dx - prx, pry);
+
+	int px1 = px0 + dx;
+	int py1 = py0 + dy;
+
+	float x0 = 2 * px0 / (float)fbWidth - 1;
+	float y0 = 1 - 2 * py0 / (float)fbHeight;
+	float x1 = 2 * px1 / (float)fbWidth - 1;
+	float y1 = 1 - 2 * py1 / (float)fbHeight;
+	float rx = 2 * prx / (float)fbWidth;
+	float ry = 2 * pry / (float)fbHeight;
+
+	// clear tri
+	glBegin(GL_TRIANGLES);
+	glVertex3f(x0, y1 + ry, 0);
+	glVertex3f(x0+rx, y1 + ry, 0);
+	glVertex3f(x0+rx, y1, 0);
+	glEnd();
+
+	// draw lines
+	glLineWidth(12);
+	glColor4ub(32, 177, 179, 40);
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(x0, y0, 0);
+	glVertex3f(x1, y0, 0);
+	glVertex3f(x1, y1, 0);
+	glVertex3f(x0 + rx, y1, 0);
+	glVertex3f(x0, y1 + ry, 0);
+	glVertex3f(x0, y0, 0);
+	glEnd();
 	glLineWidth(8);
 	glColor4ub(32, 177, 179, 100);
 	glBegin(GL_LINE_STRIP);
 	glVertex3f(x0, y0, 0);
-	glVertex3f(x1 - rx, y0, 0);
-	glVertex3f(x1, y0 - ry, 0);
+	glVertex3f(x1, y0, 0);
 	glVertex3f(x1, y1, 0);
-	glVertex3f(x0, y1, 0);
+	glVertex3f(x0 + rx, y1, 0);
+	glVertex3f(x0, y1 + ry, 0);
 	glVertex3f(x0, y0, 0);
+	glEnd();
+
+	glLineWidth(2);
+	glColor3ub(42, 226, 228);
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(x0, y0, 0);
+	glVertex3f(x1, y0, 0);
+	glVertex3f(x1, y1, 0);
+	glVertex3f(x0+rx, y1, 0);
+	glVertex3f(x0, y1+ry, 0);
+	glVertex3f(x0, y0, 0);
+	glEnd();
+
+}
+
+
+void RenderEngine::renderGradientLine(int px0, int py0, int px1, int py1)
+{
+	float x0 = 2 * px0 / (float)fbWidth - 1;
+	float y0 = 1 - 2 * py0 / (float)fbHeight;
+	float x1 = 2 * px1 / (float)fbWidth - 1;
+	float y1 = 1 - 2 * py1 / (float)fbHeight;
+
+	glLineWidth(12);
+	glColor4ub(32, 177, 179, 40);
+
+	glBegin(GL_LINES);
+	glVertex3f(x0, y0, 0);
+	glVertex3f(x1, y1, 0);
+	glEnd();
+
+	glLineWidth(8);
+	glColor4ub(32, 177, 179, 100);
+	glBegin(GL_LINES);
+	glVertex3f(x0, y0, 0);
+	glVertex3f(x1, y1, 0);
+	glEnd();
+
+	glLineWidth(2);
+	glColor3ub(42, 226, 228);
+	glBegin(GL_LINES);
+	glVertex3f(x0, y0, 0);
+	glVertex3f(x1, y1, 0);
 	glEnd();
 
 }
@@ -806,10 +1118,8 @@ void RenderEngine::renderLine(int px0, int py0, int px1, int py1,BYTE r, BYTE g,
 	float x1 = 2 * px1 / (float)fbWidth - 1;
 	float y1 = 1 - 2 * py1 / (float)fbHeight;
 
-	glBegin(GL_TRIANGLE_STRIP);
+	glBegin(GL_LINES);
 	glVertex3f(x0, y0, 0);
-	glVertex3f(x1, y0, 0);
-	glVertex3f(x0, y1, 0);
 	glVertex3f(x1, y1, 0);
 	glEnd();
 
@@ -991,7 +1301,7 @@ void RenderEngine::RenderFullScreenQuad(int texId)
 {
 	// pantalla de presentacion
 	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.5f);
+	glAlphaFunc(GL_GREATER, 0.05f);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -1001,7 +1311,7 @@ void RenderEngine::RenderFullScreenQuad(int texId)
 
 	GLint texLoc = glGetUniformLocation(this->_fixedShaderProgram, "s_texture0");
 	glUniform1i(texLoc, 0);
-
+	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
@@ -1026,6 +1336,75 @@ void RenderEngine::RenderFullScreenQuad(int texId)
 
 }
 
+
+void RenderEngine::RenderQuad(Texture2d *tx, int px , int py, float an )
+{
+	// pantalla de presentacion
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.05f);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glUseProgramObjectARB(this->_fixedShaderProgram);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, tx->id);
+
+	GLint texLoc = glGetUniformLocation(this->_fixedShaderProgram, "s_texture0");
+	glUniform1i(texLoc, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+	vec3 p[4] , coords[4];
+	p[0] = vec3(px - tx->dx / 2, py - tx->dy / 2, 0);
+	p[1] = vec3(px + tx->dx / 2, py - tx->dy / 2, 0);
+	p[2] = vec3(px + tx->dx / 2, py + tx->dy / 2, 0);
+	p[3] = vec3(px - tx->dx / 2, py + tx->dy / 2, 0);
+
+	coords[0] = vec3(0, 0, 0);
+	coords[1] = vec3(1, 0, 0);
+	coords[2] = vec3(1, 1, 0);
+	coords[3] = vec3(0, 1, 0);
+
+	glBegin(GL_QUADS);
+	for (int t = 0; t < 4; ++t)
+	{
+		p[t].rotar(vec3(px, py, 0), vec3(0, 0, 1), an);
+		float x0 = 2 * p[t].x / (float)fbWidth - 1;
+		float y0 = 1 - 2 * p[t].y / (float)fbHeight;
+		glTexCoord2f(coords[t].x, coords[t].y);
+		glVertex3f(x0, y0, 0);
+	}
+	glEnd();
+
+
+/*	
+	float x0 = 2 * (px - tx->dx / 2) / (float)fbWidth - 1;
+	float y0 = 1 - 2 * (py - tx->dy / 2) / (float)fbHeight;
+	float x1 = 2 * (px + tx->dx / 2) / (float)fbWidth - 1;
+	float y1 = 1 - 2 * (py + tx->dy / 2) / (float)fbHeight;
+
+	glBegin(GL_QUADS);
+
+	glTexCoord2f(0, 0);
+	glVertex3f(x0, y0, 0);
+
+	glTexCoord2f(1, 0);
+	glVertex3f(x1, y0, 0);
+
+	glTexCoord2f(1, 1);
+	glVertex3f(x1, y1, 0);
+
+	glTexCoord2f(0, 1);
+	glVertex3f(x0, y1, 0);
+
+	glEnd();
+
+	*/
+	glUseProgramObjectARB(0);
+	glLoadIdentity();
+
+}
 
 void RenderEngine::initECG()
 {

@@ -25,6 +25,8 @@ public:
 	void renderGradientRect(int px0, int py0, int dx, int dy);
 	void renderGradientRoundRect(int px0, int py0, int dx, int dy, int prx , int pry);
 	void renderGradientRoundRect2(int px0, int py0, int dx, int dy, int prx, int pry);
+	void renderGradientRoundRect3(int px0, int py0, int dx, int dy, int prx, int pry);
+	void renderGradientLine(int px0, int py0, int px1, int py1);
 	void renderLine(int px0, int py0, int px1, int py1, BYTE r, BYTE g, BYTE b);
 	void renderRect(int px0, int py0, int dx, int d1);
     void renderHUD();
@@ -45,18 +47,20 @@ public:
     float mr, mg, mb;
     bool target_hit;
     float vel_tras;
+	float max_vel_tras;
     int game_status;
     int game_stage;
     float timer_catch;
     int cant_capturados;
     GLint fbWidth;
     GLint fbHeight;
+	bool modo_aceleracion;
 
     // Fonts
     Glyph glyphs[255];
 
 	// imagen presentacion
-	Texture2d pres , hud;
+	Texture2d pres , hud , fondo;
 
 	// ecg
 	int cant_muestras;
@@ -77,7 +81,8 @@ private:
     void RenderEndScreen();
     void RenderGame();
     void RenderStartScreen();
-	void RenderFullScreenQuad(int texId);
+	void RenderFullScreenQuad(int texId );
+	void RenderQuad(Texture2d *tx,int px,int py , float an =0 );
 	GLhandleARB _vertexShaderRayCasting, _fragmentShaderRayCasting, _rayCastingShaderProgram;
     GLhandleARB _vertexShaderTextureVR, _fragmentShaderTextureVR, _textureVRShaderProgram;
 	GLhandleARB _vertexShaderFixed, _fragmentShaderFixed, _fixedShaderProgram;

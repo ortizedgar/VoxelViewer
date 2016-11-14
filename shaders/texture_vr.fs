@@ -38,7 +38,7 @@ void main()
         {
             float3 clr  = texture3D(s_texture0, vTexCoord);
             float k = clr.g;		// intensidad
-			if(k<0.01)
+			if(k<0.1)
 				discard;
 
 			if(clr.r>0.7 && clr.g+clr.b<0.5)

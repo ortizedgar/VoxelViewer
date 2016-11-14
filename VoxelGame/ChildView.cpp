@@ -23,7 +23,7 @@ ChildView::ChildView()
     this->primeraVez = true;
     this->filterKeyPressed = false;
     this->_demoKeyPressed = false;
-    this->escena.setDemoMode(this->demoMode);
+    //this->escena.setDemoMode(this->demoMode);
     this->moveForeward = true;
     this->totalFrames = 0;
     this->mouseDemoSignal = 0;
@@ -134,8 +134,8 @@ void ChildView::RenderLoop()
         this->MoveCameraWithMouse(cero, movimientoHorizontal, movimientoVertical, elapsedTime);
         this->MoveCameraWithKeyboard(elapsedTime);
         this->SetFiltroWithKeyboard();
-        this->SetDemoMode();
-        this->escena.lookFrom.x = this->Clamp256(static_cast<float>(this->escena.lookFrom.x));
+		this->SetDemoMode();
+		this->escena.lookFrom.x = this->Clamp256(static_cast<float>(this->escena.lookFrom.x));
         this->escena.lookFrom.y = this->Clamp256(static_cast<float>(this->escena.lookFrom.y));
         this->escena.lookFrom.z = this->Clamp256(static_cast<float>(this->escena.lookFrom.z));
 
@@ -174,8 +174,18 @@ void ChildView::RenderLoop()
                         this->escena.game_stage = 1;
                     }
                 }
-
                 break;
+			case WM_KEYUP:
+				// virtual-key code 
+				switch ((int)Msg.wParam)
+				{
+					// modo navegacion / aceleracion
+				case 'A':
+					escena.modo_aceleracion = !escena.modo_aceleracion;
+					break;
+				}
+				break;
+
             }
         }
     }
@@ -235,6 +245,7 @@ void ChildView::SetDemoMode()
     }
 }
 
+
 void ChildView::MoveCameraWithKeyboard(double elapsed_time)
 {
     if (this->demoMode)
@@ -254,15 +265,55 @@ void ChildView::MoveCameraWithKeyboard(double elapsed_time)
     }
     else
     {
-        if (GetAsyncKeyState('W'))
-        {
-            this->escena.lookFrom = this->escena.lookFrom + this->escena.viewDir*(static_cast<float>(elapsed_time)*this->escena.vel_tras);
-        }
+		if (escena.modo_aceleracion)
+		{
 
-        if (GetAsyncKeyState('S'))
-        {
-            this->escena.lookFrom = this->escena.lookFrom - this->escena.viewDir*(static_cast<float>(elapsed_time)*this->escena.vel_tras);
-        }
+			// modo acelaracion
+			float acel = 10;
+			if (GetAsyncKeyState('W'))
+			{
+				escena.vel_tras += elapsed_time*acel;
+				if (escena.vel_tras > escena.max_vel_tras)
+					escena.vel_tras = escena.max_vel_tras;
+
+			}
+
+			if (GetAsyncKeyState('S'))
+			{
+				escena.vel_tras -= elapsed_time*acel;
+				if (escena.vel_tras < 0)
+					escena.vel_tras = 0;
+			}
+
+			this->escena.lookFrom = this->escena.lookFrom + this->escena.viewDir*(static_cast<float>(elapsed_time)*this->escena.vel_tras);
+
+		}
+		else
+		{
+			// modo velocidad
+			if (GetAsyncKeyState('W'))
+			{
+				this->escena.lookFrom = this->escena.lookFrom + this->escena.viewDir*(static_cast<float>(elapsed_time)*this->escena.vel_tras);
+			}
+
+			if (GetAsyncKeyState('S'))
+			{
+				this->escena.lookFrom = this->escena.lookFrom - this->escena.viewDir*(static_cast<float>(elapsed_time)*this->escena.vel_tras);
+			}
+		}
+
+		if (GetAsyncKeyState(VK_ADD))
+			if (GetAsyncKeyState(VK_SHIFT))
+				escena.voxel_step0 *= 1.01f;
+			else
+				escena.voxel_step *= 1.01f;
+
+		if (GetAsyncKeyState(VK_SUBTRACT))
+			if (GetAsyncKeyState(VK_SHIFT))
+				escena.voxel_step0 /= 1.01f;
+			else
+				escena.voxel_step /= 1.01f;
+
     }
 }
 
