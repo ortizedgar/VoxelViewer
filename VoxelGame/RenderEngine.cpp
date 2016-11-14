@@ -221,18 +221,24 @@ void RenderEngine::RenderEndScreen()
 {
 
 	RenderFullScreenQuad(fondo.id);
-	char saux[255];
-	sprintf(saux, "Score: %d", cant_capturados * 100);
-	glLineWidth(5);
-	glColor3ub(240, 240, 240);
-	renderText(0.002f, 100, 200, saux);
-	glLineWidth(1);
-	glColor3ub(255,255,255);
-	renderText(0.002f, 100, 200, saux);
-
 	glLineWidth(5);
 	glColor3ub(255, 255, 255);
-	renderText(0.003f, 100, 100, "Game over");
+	renderText(0.003f, 50, 50, "Game over");
+
+	char saux[255];
+	sprintf(saux, "Score: %d", cant_capturados * 100);
+	glColor3ub(240, 240, 240);
+	renderText(0.002f, 50, 100, saux);
+	glLineWidth(1);
+	glColor3ub(255,255,255);
+	renderText(0.002f, 50, 100, saux);
+
+
+	glLineWidth(1);
+	glColor3ub(240, 240, 240);
+	renderText(0.001f, 50, fbHeight - 100, "Realtime Voxel Rendering - ACyT UADE");
+	renderText(0.001f, 50, fbHeight - 70, "Mariano Banquiero");
+	renderText(0.001f, 50, fbHeight - 40, "Edgar Ortiz");
 
 
 }
