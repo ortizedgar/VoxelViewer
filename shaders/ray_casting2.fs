@@ -36,27 +36,13 @@ vec3 transfer(float I)
     return mix(clr , vec3(I,I,I) , 0.5);
 }
 
-float opDisplace( vec3 p )
-{
-    vec3 q = mod(p+32,64)-32;
-    vec3 center = vec3(0,0,0);
-    float d1 = length(p-center);
-    float d2 = 0.5*sin(p.x+time*5)+sin(p.y+time*5)+sin(p.z+time*5);
-    return d1+d2;
-}
 
 vec3 tex3d(vec3 pos)
 {
     vec3 S = vec3(0,0,0);
-    float dist = opDisplace(pos);
-    float r = 20;
-//    if(dist<r)
-//        S = vec3(1.0 ,0.3 ,0.3)*(r-dist)/r;
-
     pos += vec3(128.0,128.0,128.0);
     float k = 1.0/256.0;
     vec4 tx = texture3D(s_texture0,pos.xzy*k);
-
     return filter!=0 ? transfer(tx.r) : tx.rgb + S;
 }
 
@@ -78,13 +64,14 @@ void main()
         S += tex3d(ro)*k;
         ro += rd*voxel_step;
     }
-
     S /= cant_total;
-    if(game_status!=0)
-    {
-        S.rg *= 1.5;
-    }
-
-    gl_FragColor = vec4(S, 1.0);
+	if(S.r<0.20)
+		discard;
+	float K = 2.;
+    gl_FragColor.r = 50./255.*S*K;
+    gl_FragColor.g = 160./255.*S*K;
+    gl_FragColor.b = 210./255.*S*K;
+	gl_FragColor.rgb *= gl_FragColor.rgb;
+	gl_FragColor.a = 1.0;
 	
 }

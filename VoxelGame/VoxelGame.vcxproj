@@ -248,6 +248,7 @@
     <None Include="..\shaders\fixed.vs" />
     <None Include="..\shaders\ray_casting.fs" />
     <None Include="..\shaders\ray_casting.vs" />
+    <None Include="..\shaders\ray_casting2.fs" />
     <None Include="..\shaders\texture_vr.fs" />
     <None Include="..\shaders\texture_vr.vs" />
     <None Include="ClassDiagram.cd" />

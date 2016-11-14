@@ -53,6 +53,7 @@ int MainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
     //EnableDocking(CBRS_ALIGN_ANY);
     //DockControlBar(&m_wndToolBar);
 
+
     return 0;
 }
 
@@ -66,13 +67,18 @@ BOOL MainFrame::PreCreateWindow(CREATESTRUCT& cs)
     // TODO: Modify the Window class or styles here by modifying
     //  the CREATESTRUCT cs
 
-    /*cs.style = WS_OVERLAPPED | WS_CAPTION | FWS_ADDTOTITLE
-        | WS_THICKFRAME | WS_MAXIMIZE | WS_SYSMENU;*/
+    //cs.style = WS_OVERLAPPED | WS_CAPTION | FWS_ADDTOTITLE
+      //  | WS_THICKFRAME | WS_MAXIMIZE | WS_SYSMENU;
 
     ShowCursor(false);
 
     cs.dwExStyle &= ~WS_EX_CLIENTEDGE;
     cs.lpszClass = AfxRegisterWndClass(0);
+	//cs.cx = 800; 
+	//cs.cy = 600; 
+	cs.x = 0; 
+	cs.y = 0;
+
     return TRUE;
 }
 

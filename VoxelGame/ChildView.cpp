@@ -183,6 +183,12 @@ void ChildView::RenderLoop()
 				case 'A':
 					escena.modo_aceleracion = !escena.modo_aceleracion;
 					break;
+
+				case 'X':
+					// modo vision X 
+					escena.modo_visionX  = !escena.modo_visionX;
+					break;
+					
 				}
 				break;
 

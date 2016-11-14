@@ -171,6 +171,9 @@
     <None Include="..\shaders\fixed.vs">
       <Filter>Source Files\Shaders Files</Filter>
     </None>
+    <None Include="..\shaders\ray_casting2.fs">
+      <Filter>Source Files\Shaders Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\VoxelGame.ico">

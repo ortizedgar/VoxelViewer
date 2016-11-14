@@ -13,8 +13,9 @@ public:
     bool Initialize(HDC hContext_i);
     void Resize(int nWidth_i, int nHeight_i);
     void Render();
-    void RayCasting();
-    void TextureVR();
+	void RayCasting();
+	void RayCasting2();
+	void TextureVR();
     void Release();
     void setShaders();
     void loadShaders(char *vs, char *fs, GLhandleARB *vs_main, GLhandleARB *fs_main, GLhandleARB *shader_prog);
@@ -55,6 +56,8 @@ public:
     GLint fbWidth;
     GLint fbHeight;
 	bool modo_aceleracion;
+	bool modo_visionX;
+	float E;		// escala global
 
     // Fonts
     Glyph glyphs[255];
@@ -84,7 +87,8 @@ private:
 	void RenderFullScreenQuad(int texId );
 	void RenderQuad(Texture2d *tx,int px,int py , float an =0 );
 	GLhandleARB _vertexShaderRayCasting, _fragmentShaderRayCasting, _rayCastingShaderProgram;
-    GLhandleARB _vertexShaderTextureVR, _fragmentShaderTextureVR, _textureVRShaderProgram;
+	GLhandleARB _vertexShaderRayCasting2, _fragmentShaderRayCasting2, _rayCastingShaderProgram2;
+	GLhandleARB _vertexShaderTextureVR, _fragmentShaderTextureVR, _textureVRShaderProgram;
 	GLhandleARB _vertexShaderFixed, _fragmentShaderFixed, _fixedShaderProgram;
 
     bool _demoMode;
