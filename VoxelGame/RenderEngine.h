@@ -51,8 +51,9 @@ public:
 	float max_vel_tras;
     int game_status;
     int game_stage;
-    float timer_catch;
-    int cant_capturados;
+	float timer_catch;
+	float timer_fire;
+	int cant_capturados;
     GLint fbWidth;
     GLint fbHeight;
 	bool modo_aceleracion;
@@ -63,7 +64,7 @@ public:
     Glyph glyphs[255];
 
 	// imagen presentacion
-	Texture2d pres , hud , fondo;
+	Texture2d pres , hud , fondo , fire;
 
 	// ecg
 	int cant_muestras;
@@ -85,7 +86,7 @@ private:
     void RenderGame();
     void RenderStartScreen();
 	void RenderFullScreenQuad(int texId );
-	void RenderQuad(Texture2d *tx,int px,int py , float an =0 );
+	void RenderQuad(Texture2d *tx,int px,int py , float an =0 ,float k=1);
 	GLhandleARB _vertexShaderRayCasting, _fragmentShaderRayCasting, _rayCastingShaderProgram;
 	GLhandleARB _vertexShaderRayCasting2, _fragmentShaderRayCasting2, _rayCastingShaderProgram2;
 	GLhandleARB _vertexShaderTextureVR, _fragmentShaderTextureVR, _textureVRShaderProgram;

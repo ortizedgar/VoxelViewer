@@ -18,6 +18,7 @@ RenderEngine::RenderEngine()
     U = vec3(0, 1, 0);
     V = vec3(0, 0, 1);
     timer_catch = 0;
+	timer_fire = 0;
     voxel_step = 0.5;
     voxel_step0 = 75.0;
     vel_tras = 20;
@@ -102,12 +103,6 @@ bool RenderEngine::Initialize(HDC hContext_i)
         AfxMessageBox(_T("Failed to read the data"));
     }
 
-    /*
-    if( !tex.CreateFromTest( 1, 256, 256,256))
-    {
-        AfxMessageBox( _T( "Failed to read the data" ));
-    }*/
-
     // Imagen presentacion
     if (!pres.CreateFromFile(_T("../media/pres.bmp")))
     {
@@ -121,12 +116,17 @@ bool RenderEngine::Initialize(HDC hContext_i)
     }
 
     // Imagen HUD
-    if (!hud.CreateFromFile(_T("../media/hud.bmp"), true))
+    if (!hud.CreateFromFile(_T("../media/hud.bmp"), 1))
     {
         AfxMessageBox(_T("Failed to read hud.bmp"));
     }
 
-    GLint dims[4] = { 0 };
+	// Imagen Fire
+	if (!fire.CreateFromFile(_T("../media/fire.bmp"), 2))
+	{
+		AfxMessageBox(_T("Failed to read fire.bmp"));
+	}
+	GLint dims[4] = { 0 };
     glGetIntegerv(GL_VIEWPORT, dims);
     fbWidth = dims[2];
     fbHeight = dims[3];
@@ -144,7 +144,7 @@ void RenderEngine::initFonts()
 {
     CDC *pDC = CDC::FromHandle(m_hDC);
     CFont hfont, *hfontOld;
-    hfont.CreateFont(48, 13, 0, 0, FW_EXTRALIGHT, 0, 0, 0, 0, OUT_TT_PRECIS, 0, CLEARTYPE_QUALITY, FIXED_PITCH || FF_ROMAN, NULL);
+    hfont.CreateFont(48, 13, 0, 0, FW_EXTRALIGHT, 0, 0, 0, 0, OUT_TT_PRECIS, 0, CLEARTYPE_QUALITY, FIXED_PITCH || FF_ROMAN, _T("Arial"));
     hfontOld = pDC->SelectObject(&hfont);
     char s[1];
     auto nNumPoints = 0;
@@ -245,11 +245,15 @@ void RenderEngine::RenderEndScreen()
 
 void RenderEngine::RenderGame()
 {
-    if (modo_visionX)
+    // pantalla principal
+	if (modo_visionX)
         RayCasting2();
     else
         RayCasting();
-    TextureVR();
+    
+	// preview
+	TextureVR();
+
 }
 
 void RenderEngine::RenderStartScreen()
@@ -397,6 +401,25 @@ void RenderEngine::RayCasting()
         }
     }
 
+
+	if (timer_fire > 0)
+	{
+		timer_fire -= elapsed_time;
+		if (timer_fire <= 0)
+		{
+			timer_fire = 0;
+		}
+		else
+		{
+			// dibujo el fire
+			int mx = fbWidth / 2;
+			int my = fbHeight / 2;
+			RenderQuad(&fire, mx, my, timer_fire * 50, 10 * timer_fire);
+			RenderQuad(&fire, mx + 20, my, timer_fire * 50 + 1.5, 10 * timer_fire);
+			RenderQuad(&fire, mx , my+20, timer_fire * 50 + 2, 10 * timer_fire);
+		}
+	}
+
     // Eliminar objetivo
     this->FireWeapon();
 }
@@ -483,8 +506,14 @@ void RenderEngine::RayCasting2()
 
 void RenderEngine::FireWeapon()
 {
+
     if (GetAsyncKeyState(VK_LBUTTON) || (this->_demoMode && this->_totalFrames % 10 == 0))
     {
+		if (!timer_fire)
+		{
+			timer_fire = 0.25;
+		}
+
         if (this->target_hit) {
             this->cant_capturados++;
             this->tex.Anomalies(this->tex.Anomalies() - 1);
@@ -1318,7 +1347,7 @@ void RenderEngine::RenderFullScreenQuad(int texId)
 }
 
 
-void RenderEngine::RenderQuad(Texture2d *tx, int px, int py, float an)
+void RenderEngine::RenderQuad(Texture2d *tx, int px, int py, float an , float k)
 {
     // pantalla de presentacion
     glEnable(GL_ALPHA_TEST);
@@ -1337,10 +1366,10 @@ void RenderEngine::RenderQuad(Texture2d *tx, int px, int py, float an)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
     vec3 p[4], coords[4];
-    p[0] = vec3(px - tx->dx / 2 * E, py - tx->dy / 2 * E, 0);
-    p[1] = vec3(px + tx->dx / 2 * E, py - tx->dy / 2 * E, 0);
-    p[2] = vec3(px + tx->dx / 2 * E, py + tx->dy / 2 * E, 0);
-    p[3] = vec3(px - tx->dx / 2 * E, py + tx->dy / 2 * E, 0);
+    p[0] = vec3(px - tx->dx / 2 * E *k, py - tx->dy / 2 * E*k, 0);
+    p[1] = vec3(px + tx->dx / 2 * E*k, py - tx->dy / 2 * E*k, 0);
+    p[2] = vec3(px + tx->dx / 2 * E*k, py + tx->dy / 2 * E*k, 0);
+    p[3] = vec3(px - tx->dx / 2 * E*k, py + tx->dy / 2 * E*k, 0);
 
     coords[0] = vec3(0, 0, 0);
     coords[1] = vec3(1, 0, 0);

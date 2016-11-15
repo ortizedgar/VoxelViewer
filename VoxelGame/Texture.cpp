@@ -259,7 +259,7 @@ Texture2d::~Texture2d()
 	}
 }
 
-bool Texture2d::CreateFromFile(LPCTSTR lpDataFile_i, bool color_key)
+bool Texture2d::CreateFromFile(LPCTSTR lpDataFile_i, char color_key)
 {
 	FILE *file;
 	BYTE header[54];
@@ -315,14 +315,21 @@ bool Texture2d::CreateFromFile(LPCTSTR lpDataFile_i, bool color_key)
 				rgba[t * 4 + 3] =0;		// color key
 			else
 			{
-				// y la hago monocroma
-				rgba[t * 4 + 0] = 255;		// R
-				rgba[t * 4 + 1] = 255;		// G
-				rgba[t * 4 + 2] = 255;		// B
-
 				rgba[t * 4 + 3] = 255;		// A
+				if (color_key == 1)
+				{
+					// y la hago monocroma
+					rgba[t * 4 + 0] = 255;		// R
+					rgba[t * 4 + 1] = 255;		// G
+					rgba[t * 4 + 2] = 255;		// B
+				}
+				else
+				{
+					rgba[t * 4 + 0] = r;
+					rgba[t * 4 + 1] = g;
+					rgba[t * 4 + 2] = b;
+				}
 			}
-
 		}
 		else
 		{

@@ -38,7 +38,7 @@ class Texture2d
 public:
 	Texture2d();
 	virtual ~Texture2d();
-	bool CreateFromFile(LPCTSTR lpDataFile_i, bool color_key= false);
+	bool CreateFromFile(LPCTSTR lpDataFile_i, char color_key= 0);
 	int dx, dy;
 	int id;
 };
