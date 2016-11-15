@@ -132,7 +132,7 @@ bool RenderEngine::Initialize(HDC hContext_i)
     fbHeight = dims[3];
     float ex = (float)fbWidth / 1276.;
     float ey = (float)fbHeight / 734.;
-    E = min(ex, ey);
+    E = max(ex, ey);
 
     initECG();
 
@@ -649,13 +649,13 @@ void RenderEngine::renderHUD()
     int pos_y_electro, pos_y_aux, pos_y_time;
 
     // preview craneo
-    renderGradientRoundRect(960 * E, 5 * E, 310 * E, my - 5 * E, 25 * E, 25 * E);
+    renderGradientRoundRect(fbWidth - 310 * E, 5 * E, 310 * E, my - 5 * E, 25 * E, 25 * E);
     // electro
-    renderGradientRoundRect(960 * E, pos_y_electro = my + 5 * E, 310 * E, 100 * E, 0, 0);
+    renderGradientRoundRect(fbWidth - 310 * E, pos_y_electro = my + 5 * E, 310 * E, 100 * E, 0, 0);
 
     // scoreboarad aux
-    renderGradientRoundRect2(960 * E, pos_y_aux = my + 110 * E, 310 * E, 100 * E, 50 * E, 25 * E);
-    renderGradientRoundRect2(1010 * E, pos_y_time = my + 220 * E, 260 * E, 100 * E, 25 * E, 25 * E);
+    renderGradientRoundRect2(fbWidth - 310 * E, pos_y_aux = my + 110 * E, 310 * E, 100 * E, 50 * E, 25 * E);
+    renderGradientRoundRect2(fbWidth - 260 * E, pos_y_time = my + 220 * E, 260 * E, 100 * E, 25 * E, 25 * E);
 
     char saux[40];
 
@@ -776,7 +776,7 @@ void RenderEngine::renderHUD()
     // ECG
     glLineWidth(3);
     glColor4f(1, 1, 1, 0.25);
-    this->renderText(0.0012f* E, 970 * E, pos_y_electro + 10 * E, "EKG");
+    this->renderText(0.0012f* E, fbWidth - 290 * E, pos_y_electro + 10 * E, "EKG");
 
     glLineWidth(3);
     glColor3ub(150, 255, 150);
@@ -784,7 +784,7 @@ void RenderEngine::renderHUD()
     for (int i = 0; i < 3200; i += 5)
     {
         int k = i + time * 2000;
-        int px = (970 + i / 12.) * E;
+        int px = fbWidth -300*E  + i / 11.*E;
         int py = pos_y_electro + 30 * E + ECG[k%cant_muestras] * 50 * E;
         float x0 = 2 * px / (float)fbWidth - 1;
         float y0 = 1 - 2 * py / (float)fbHeight;
@@ -805,28 +805,25 @@ void RenderEngine::renderHUD()
     // Time
     glLineWidth(4);
     glColor4f(1, 1, 1, 0.25);
-    this->renderText(0.0015f* E, 1020 * E, pos_y_time + 10 * E, "Time Limit");
+    this->renderText(0.0015f* E, fbWidth - 240 * E, pos_y_time + 10 * E, "Time Limit");
     glColor4f(1, 1, 1, 0.5f);
     sprintf_s(saux, "%02d:%02d", (int)(time / 60), ((int)time) % 60);
-    this->renderText(0.0025f* E, 1030 * E, pos_y_time + 40 * E, saux);
+    this->renderText(0.0025f* E, fbWidth - 230 * E, pos_y_time + 40 * E, saux);
     glLineWidth(2);
     glColor4f(1, 1, 1, 1);
-    this->renderText(0.0025f* E, 1030 * E, pos_y_time + 40 * E, saux);
+    this->renderText(0.0025f* E, fbWidth - 230 * E, pos_y_time + 40 * E, saux);
 
 
     // Step0 - cant pasos
     glLineWidth(4);
     glColor4f(1, 1, 1, 0.25);
-    this->renderText(0.0015f* E, 970 * E, pos_y_aux + 10 * E, "Step0 - st");
+    this->renderText(0.0015f* E, fbWidth - 290 * E, pos_y_aux + 10 * E, "Step0 - st");
     glColor4f(1, 1, 1, 0.5f);
     sprintf_s(saux, "%d : %.3f", (int)voxel_step0, voxel_step);
-    this->renderText(0.0015f* E, 980 * E, pos_y_aux + 40 * E, saux);
+    this->renderText(0.0015f* E, fbWidth - 280 * E, pos_y_aux + 40 * E, saux);
     glLineWidth(2);
     glColor4f(1, 1, 1, 1);
-    this->renderText(0.0015f* E, 980 * E, pos_y_aux + 40 * E, saux);
-
-    //sprintf_s(saux, "vel: %.3f", vel_tras);
-    //this->renderText(0.0015f, 980, 500, saux);
+    this->renderText(0.0015f* E, fbWidth - 280 * E, pos_y_aux + 40 * E, saux);
 
     glLineWidth(1);
     glColor4f(1, 1, 1, 1);
