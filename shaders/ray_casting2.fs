@@ -68,9 +68,9 @@ void main()
 	if(S.r<0.20)
 		discard;
 	float K = 2.;
-    gl_FragColor.r = 50./255.*S*K;
-    gl_FragColor.g = 160./255.*S*K;
-    gl_FragColor.b = 210./255.*S*K;
+    gl_FragColor.r = 50./255.*S.x*K;
+    gl_FragColor.g = 160./255.*S.y*K;
+    gl_FragColor.b = 210./255.*S.z*K;
 	gl_FragColor.rgb *= gl_FragColor.rgb;
 	gl_FragColor.a = 1.0;
 	

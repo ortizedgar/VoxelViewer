@@ -36,7 +36,7 @@ void main()
             gl_FragColor = vec4(0.5,0.5,1,1-dist/10);
         else
         {
-            float3 clr  = texture3D(s_texture0, vTexCoord);
+            vec3 clr  = texture3D(s_texture0, vTexCoord).rgb;
             float k = clr.g;		// intensidad
 			if(k<0.1)
 				discard;

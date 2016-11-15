@@ -134,8 +134,8 @@ void ChildView::RenderLoop()
         this->MoveCameraWithMouse(cero, movimientoHorizontal, movimientoVertical, elapsedTime);
         this->MoveCameraWithKeyboard(elapsedTime);
         this->SetFiltroWithKeyboard();
-		this->SetDemoMode();
-		this->escena.lookFrom.x = this->Clamp256(static_cast<float>(this->escena.lookFrom.x));
+        this->SetDemoMode();
+        this->escena.lookFrom.x = this->Clamp256(static_cast<float>(this->escena.lookFrom.x));
         this->escena.lookFrom.y = this->Clamp256(static_cast<float>(this->escena.lookFrom.y));
         this->escena.lookFrom.z = this->Clamp256(static_cast<float>(this->escena.lookFrom.z));
 
@@ -175,22 +175,22 @@ void ChildView::RenderLoop()
                     }
                 }
                 break;
-			case WM_KEYUP:
-				// virtual-key code 
-				switch ((int)Msg.wParam)
-				{
-					// modo navegacion / aceleracion
-				case 'A':
-					escena.modo_aceleracion = !escena.modo_aceleracion;
-					break;
+            case WM_KEYUP:
+                // virtual-key code 
+                switch ((int)Msg.wParam)
+                {
+                    // modo navegacion / aceleracion
+                case 'A':
+                    escena.modo_aceleracion = !escena.modo_aceleracion;
+                    break;
 
-				case 'X':
-					// modo vision X 
-					escena.modo_visionX  = !escena.modo_visionX;
-					break;
-					
-				}
-				break;
+                case 'X':
+                    // modo vision X 
+                    escena.modo_visionX = !escena.modo_visionX;
+                    break;
+
+                }
+                break;
 
             }
         }
@@ -271,54 +271,54 @@ void ChildView::MoveCameraWithKeyboard(double elapsed_time)
     }
     else
     {
-		if (escena.modo_aceleracion)
-		{
+        if (escena.modo_aceleracion)
+        {
 
-			// modo acelaracion
-			float acel = 10;
-			if (GetAsyncKeyState('W'))
-			{
-				escena.vel_tras += elapsed_time*acel;
-				if (escena.vel_tras > escena.max_vel_tras)
-					escena.vel_tras = escena.max_vel_tras;
+            // modo acelaracion
+            float acel = 10;
+            if (GetAsyncKeyState('W'))
+            {
+                escena.vel_tras += elapsed_time*acel;
+                if (escena.vel_tras > escena.max_vel_tras)
+                    escena.vel_tras = escena.max_vel_tras;
 
-			}
+            }
 
-			if (GetAsyncKeyState('S'))
-			{
-				escena.vel_tras -= elapsed_time*acel;
-				if (escena.vel_tras < 0)
-					escena.vel_tras = 0;
-			}
+            if (GetAsyncKeyState('S'))
+            {
+                escena.vel_tras -= elapsed_time*acel;
+                if (escena.vel_tras < 0)
+                    escena.vel_tras = 0;
+            }
 
-			this->escena.lookFrom = this->escena.lookFrom + this->escena.viewDir*(static_cast<float>(elapsed_time)*this->escena.vel_tras);
+            this->escena.lookFrom = this->escena.lookFrom + this->escena.viewDir*(static_cast<float>(elapsed_time)*this->escena.vel_tras);
 
-		}
-		else
-		{
-			// modo velocidad
-			if (GetAsyncKeyState('W'))
-			{
-				this->escena.lookFrom = this->escena.lookFrom + this->escena.viewDir*(static_cast<float>(elapsed_time)*this->escena.vel_tras);
-			}
+        }
+        else
+        {
+            // modo velocidad
+            if (GetAsyncKeyState('W'))
+            {
+                this->escena.lookFrom = this->escena.lookFrom + this->escena.viewDir*(static_cast<float>(elapsed_time)*this->escena.vel_tras);
+            }
 
-			if (GetAsyncKeyState('S'))
-			{
-				this->escena.lookFrom = this->escena.lookFrom - this->escena.viewDir*(static_cast<float>(elapsed_time)*this->escena.vel_tras);
-			}
-		}
+            if (GetAsyncKeyState('S'))
+            {
+                this->escena.lookFrom = this->escena.lookFrom - this->escena.viewDir*(static_cast<float>(elapsed_time)*this->escena.vel_tras);
+            }
+        }
 
-		if (GetAsyncKeyState(VK_ADD))
-			if (GetAsyncKeyState(VK_SHIFT))
-				escena.voxel_step0 *= 1.01f;
-			else
-				escena.voxel_step *= 1.01f;
+        if (GetAsyncKeyState(VK_ADD))
+            if (GetAsyncKeyState(VK_SHIFT))
+                escena.voxel_step0 *= 1.01f;
+            else
+                escena.voxel_step *= 1.01f;
 
-		if (GetAsyncKeyState(VK_SUBTRACT))
-			if (GetAsyncKeyState(VK_SHIFT))
-				escena.voxel_step0 /= 1.01f;
-			else
-				escena.voxel_step /= 1.01f;
+        if (GetAsyncKeyState(VK_SUBTRACT))
+            if (GetAsyncKeyState(VK_SHIFT))
+                escena.voxel_step0 /= 1.01f;
+            else
+                escena.voxel_step /= 1.01f;
 
     }
 }

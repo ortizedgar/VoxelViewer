@@ -11,7 +11,7 @@ Texture::Texture()
     this->dy(0);
     this->dz(0);
     this->id(0);
-    this->_anomalies = 10;
+    this->_anomalies = 100;
     this->_anomalieRadius = 8;
 }
 
