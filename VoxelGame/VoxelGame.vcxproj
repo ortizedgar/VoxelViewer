@@ -111,6 +111,8 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -244,6 +246,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.gitignore" />
+    <None Include="..\media\bonsai.raw" />
+    <None Include="..\media\ecg.dat" />
+    <None Include="..\media\MRI-Head.pvm" />
+    <None Include="..\media\mri-head.raw" />
+    <None Include="..\media\skull.map" />
+    <None Include="..\media\skull.raw" />
+    <None Include="..\media\VisMale.pvm" />
+    <None Include="..\media\vismale.raw" />
     <None Include="..\shaders\fixed.fs" />
     <None Include="..\shaders\fixed.vs" />
     <None Include="..\shaders\ray_casting.fs" />
@@ -257,6 +267,12 @@
     <None Include="Settings.ini" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\media\fire.bmp" />
+    <Image Include="..\media\hud - copia.bmp" />
+    <Image Include="..\media\hud.bmp" />
+    <Image Include="..\media\hud2.bmp" />
+    <Image Include="..\media\pres.bmp" />
+    <Image Include="..\media\pres_fondo.bmp" />
     <Image Include="res\Toolbar.bmp" />
     <Image Include="res\VoxelGame.ico" />
   </ItemGroup>

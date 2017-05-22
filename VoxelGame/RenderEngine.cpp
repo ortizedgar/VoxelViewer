@@ -18,7 +18,7 @@ RenderEngine::RenderEngine()
     U = vec3(0, 1, 0);
     V = vec3(0, 0, 1);
     timer_catch = 0;
-	timer_fire = 0;
+    timer_fire = 0;
     voxel_step = 0.5;
     voxel_step0 = 75.0;
     vel_tras = 20;
@@ -50,7 +50,7 @@ bool RenderEngine::Initialize(HDC hContext_i)
     stPixelFormatDescriptor.cStencilBits = 8;
     stPixelFormatDescriptor.iLayerType = PFD_MAIN_PLANE;
 
-    // Collect the pixel format.
+    // Collect the pixel format
     auto nPixelFormat = ChoosePixelFormat(hContext_i, &stPixelFormatDescriptor);
     if (nPixelFormat == 0)
     {
@@ -121,12 +121,13 @@ bool RenderEngine::Initialize(HDC hContext_i)
         AfxMessageBox(_T("Failed to read hud.bmp"));
     }
 
-	// Imagen Fire
-	if (!fire.CreateFromFile(_T("../media/fire.bmp"), 2))
-	{
-		AfxMessageBox(_T("Failed to read fire.bmp"));
-	}
-	GLint dims[4] = { 0 };
+    // Imagen Fire
+    if (!fire.CreateFromFile(_T("../media/fire.bmp"), 2))
+    {
+        AfxMessageBox(_T("Failed to read fire.bmp"));
+    }
+
+    GLint dims[4] = { 0 };
     glGetIntegerv(GL_VIEWPORT, dims);
     fbWidth = dims[2];
     fbHeight = dims[3];
@@ -135,7 +136,6 @@ bool RenderEngine::Initialize(HDC hContext_i)
     E = max(ex, ey);
 
     initECG();
-
 
     return true;
 }
@@ -219,7 +219,6 @@ void RenderEngine::Render()
 
 void RenderEngine::RenderEndScreen()
 {
-
     RenderFullScreenQuad(fondo.id);
     glLineWidth(5);
     glColor3ub(255, 255, 255);
@@ -233,63 +232,29 @@ void RenderEngine::RenderEndScreen()
     glColor3ub(255, 255, 255);
     renderText(0.002f, 50, 100, saux);
 
-
     glLineWidth(1);
     glColor3ub(240, 240, 240);
     renderText(0.001f, 50, fbHeight - 100, "Realtime Voxel Rendering - ACyT UADE");
     renderText(0.001f, 50, fbHeight - 70, "Mariano Banquiero");
     renderText(0.001f, 50, fbHeight - 40, "Edgar Ortiz");
-
-
 }
 
 void RenderEngine::RenderGame()
 {
     // pantalla principal
-	if (modo_visionX)
+    if (modo_visionX)
         RayCasting2();
     else
         RayCasting();
-    
-	// preview
-	TextureVR();
+
+    // preview
+    TextureVR();
 
 }
 
 void RenderEngine::RenderStartScreen()
 {
-
     RenderFullScreenQuad(pres.id);
-
-    /*
-    auto xPosition = this->fbWidth / 2;
-    auto yPosition = this->fbHeight / 8;
-    char *mensaje = "Vexplorer!";
-    this->RenderTitleText(xPosition / 2, &yPosition, mensaje);
-    mensaje = "Bienvenido a Vexplorer!";
-    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
-    mensaje = "Un videojuego de exploracion 3D. El objetivo es";
-    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
-    mensaje = "eliminar todas las esferas rojas posibles";
-    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
-    mensaje = "antes que se agote el tiempo.";
-    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
-    mensaje = "Controles:";
-    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
-    mensaje = "W - Avanzar";
-    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
-    mensaje = "S - Retroceder";
-    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
-    mensaje = "Mouse - Mirar";
-    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
-    mensaje = "Boton izquierdo - Disparar arma";
-    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
-    mensaje = "F - Encender/Apagar filtro";
-    this->RenderExplanationText(xPosition / 8, &yPosition, mensaje);
-    mensaje = "Presione cualquier tecla para comenzar!";
-    this->RenderStartText(xPosition / 8, &yPosition, mensaje);
-    */
-
 }
 
 void RenderEngine::RenderTitleText(unsigned int xPosition, int *yPosition, char * mensaje)
@@ -384,6 +349,7 @@ void RenderEngine::RayCasting()
         //sprintf_s(saux,"ViewDir =(%.3f,%.3f,%.3f)  UP=(%.3f,%.3f,%.3f",viewDir.x,viewDir.y,viewDir.z ,U.x,U.y,U.z);
         //renderText(10,50,saux);
     }
+
     this->target_hit = false;
 
     // Verifico si pasa sobre un objetivo
@@ -401,30 +367,27 @@ void RenderEngine::RayCasting()
         }
     }
 
-
-	if (timer_fire > 0)
-	{
-		timer_fire -= elapsed_time;
-		if (timer_fire <= 0)
-		{
-			timer_fire = 0;
-		}
-		else
-		{
-			// dibujo el fire
-			int mx = fbWidth / 2;
-			int my = fbHeight / 2;
-			RenderQuad(&fire, mx, my, timer_fire * 50, 10 * timer_fire);
-			RenderQuad(&fire, mx + 20, my, timer_fire * 50 + 1.5, 10 * timer_fire);
-			RenderQuad(&fire, mx , my+20, timer_fire * 50 + 2, 10 * timer_fire);
-		}
-	}
+    if (timer_fire > 0)
+    {
+        timer_fire -= elapsed_time;
+        if (timer_fire <= 0)
+        {
+            timer_fire = 0;
+        }
+        else
+        {
+            // dibujo el fire
+            int mx = fbWidth / 2;
+            int my = fbHeight / 2;
+            RenderQuad(&fire, mx, my, timer_fire * 50, 10 * timer_fire);
+            RenderQuad(&fire, mx + 20, my, timer_fire * 50 + 1.5, 10 * timer_fire);
+            RenderQuad(&fire, mx, my + 20, timer_fire * 50 + 2, 10 * timer_fire);
+        }
+    }
 
     // Eliminar objetivo
     this->FireWeapon();
 }
-
-
 
 // modo vision X
 void RenderEngine::RayCasting2()
@@ -506,13 +469,12 @@ void RenderEngine::RayCasting2()
 
 void RenderEngine::FireWeapon()
 {
-
     if (GetAsyncKeyState(VK_LBUTTON) || (this->_demoMode && this->_totalFrames % 10 == 0))
     {
-		if (!timer_fire)
-		{
-			timer_fire = 0.25;
-		}
+        if (!timer_fire)
+        {
+            timer_fire = 0.25;
+        }
 
         if (this->target_hit) {
             this->cant_capturados++;
@@ -747,7 +709,6 @@ void RenderEngine::renderHUD()
         glEnd();
     }
 
-
     // loof from
     glLineWidth(1);
     renderLine(mx + 25 * E, my + 25 * E, mx + 100 * E, my + 50 * E, 240, 240, 240);
@@ -772,7 +733,6 @@ void RenderEngine::renderHUD()
     glColor3f(mr, mg, mb);
     renderRect(mx + 225 * E, my - 172 * E, 22 * E, 22 * E);
 
-
     // ECG
     glLineWidth(3);
     glColor4f(1, 1, 1, 0.25);
@@ -784,15 +744,14 @@ void RenderEngine::renderHUD()
     for (int i = 0; i < 3200; i += 5)
     {
         int k = i + time * 2000;
-        int px = fbWidth -300*E  + i / 11.*E;
+        int px = fbWidth - 300 * E + i / 11.*E;
         int py = pos_y_electro + 30 * E + ECG[k%cant_muestras] * 50 * E;
         float x0 = 2 * px / (float)fbWidth - 1;
         float y0 = 1 - 2 * py / (float)fbHeight;
         glVertex3f(x0, y0, 0);
     }
+
     glEnd();
-
-
 
     // fps y time
     // Debug fps
@@ -813,7 +772,6 @@ void RenderEngine::renderHUD()
     glColor4f(1, 1, 1, 1);
     this->renderText(0.0025f* E, fbWidth - 230 * E, pos_y_time + 40 * E, saux);
 
-
     // Step0 - cant pasos
     glLineWidth(4);
     glColor4f(1, 1, 1, 0.25);
@@ -827,8 +785,10 @@ void RenderEngine::renderHUD()
 
     glLineWidth(1);
     glColor4f(1, 1, 1, 1);
+
     // modo navegacion o aceleracion
     this->renderText(0.0012f*E, mx - 150 * E, my - 150 * E, modo_aceleracion ? "ACL" : "NAV");
+
     // modo de vision: normal / x
     strcpy(saux, modo_visionX ? "VX" : "NRM");
     if (filtro)
@@ -836,9 +796,6 @@ void RenderEngine::renderHUD()
     this->renderText(0.0012f*E, mx - 150 * E, my + 150 * E, saux);
 
     RenderQuad(&hud, mx, my, atan2(viewDir.y, viewDir.x));
-
-
-
 }
 
 bool RenderEngine::CheckTargetHit()
@@ -866,8 +823,6 @@ void RenderEngine::renderCircle(int px, int py, int r)
     glEnd();
 }
 
-
-
 void RenderEngine::renderGradientRect(int px0, int py0, int dx, int dy)
 {
     // clear rect
@@ -890,10 +845,7 @@ void RenderEngine::renderGradientRect(int px0, int py0, int dx, int dy)
     glVertex3f(x0, y1, 0);
     glVertex3f(x0, y0, 0);
     glEnd();
-
-
 }
-
 
 void RenderEngine::renderGradientRoundRect(int px0, int py0, int dx, int dy, int prx, int pry)
 {
@@ -951,9 +903,7 @@ void RenderEngine::renderGradientRoundRect(int px0, int py0, int dx, int dy, int
     glVertex3f(x0, y1, 0);
     glVertex3f(x0, y0 - ry, 0);
     glEnd();
-
 }
-
 
 void RenderEngine::renderGradientRoundRect3(int px0, int py0, int dx, int dy, int prx, int pry)
 {
@@ -991,7 +941,6 @@ void RenderEngine::renderGradientRoundRect3(int px0, int py0, int dx, int dy, in
     glVertex3f(x0, y0, 0);
     glEnd();
 
-
     glLineWidth(8);
     glColor4ub(32, 177, 179, 100);
     glBegin(GL_LINE_STRIP);
@@ -1013,10 +962,7 @@ void RenderEngine::renderGradientRoundRect3(int px0, int py0, int dx, int dy, in
     glVertex3f(x0, y1, 0);
     glVertex3f(x0, y0, 0);
     glEnd();
-
-
 }
-
 
 void RenderEngine::renderGradientRoundRect2(int px0, int py0, int dx, int dy, int prx, int pry)
 {
@@ -1074,9 +1020,7 @@ void RenderEngine::renderGradientRoundRect2(int px0, int py0, int dx, int dy, in
     glVertex3f(x0, y1 + ry, 0);
     glVertex3f(x0, y0, 0);
     glEnd();
-
 }
-
 
 void RenderEngine::renderGradientLine(int px0, int py0, int px1, int py1)
 {
@@ -1106,12 +1050,10 @@ void RenderEngine::renderGradientLine(int px0, int py0, int px1, int py1)
     glVertex3f(x0, y0, 0);
     glVertex3f(x1, y1, 0);
     glEnd();
-
 }
 
 void RenderEngine::renderLine(int px0, int py0, int px1, int py1, BYTE r, BYTE g, BYTE b)
 {
-
     glColor3ub(r, g, b);
 
     float x0 = 2 * px0 / (float)fbWidth - 1;
@@ -1123,9 +1065,7 @@ void RenderEngine::renderLine(int px0, int py0, int px1, int py1, BYTE r, BYTE g
     glVertex3f(x0, y0, 0);
     glVertex3f(x1, y1, 0);
     glEnd();
-
 }
-
 
 void RenderEngine::renderRect(int px0, int py0, int dx, int dy)
 {
@@ -1303,7 +1243,6 @@ char *RenderEngine::textFileRead(char *fn)
     return content;
 }
 
-
 void RenderEngine::RenderFullScreenQuad(int texId)
 {
     // pantalla de presentacion
@@ -1344,7 +1283,7 @@ void RenderEngine::RenderFullScreenQuad(int texId)
 }
 
 
-void RenderEngine::RenderQuad(Texture2d *tx, int px, int py, float an , float k)
+void RenderEngine::RenderQuad(Texture2d *tx, int px, int py, float an, float k)
 {
     // pantalla de presentacion
     glEnable(GL_ALPHA_TEST);

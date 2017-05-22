@@ -37,6 +37,9 @@
     <Filter Include="Source Files\Misc Source Files">
       <UniqueIdentifier>{33ae6998-3b85-49b1-93af-0bf5fa022650}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Media Files">
+      <UniqueIdentifier>{6483d930-bd45-4b7e-b273-f70071cb3670}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VoxelGame.h">
@@ -174,6 +177,30 @@
     <None Include="..\shaders\ray_casting2.fs">
       <Filter>Source Files\Shaders Files</Filter>
     </None>
+    <None Include="..\media\bonsai.raw">
+      <Filter>Media Files</Filter>
+    </None>
+    <None Include="..\media\ecg.dat">
+      <Filter>Media Files</Filter>
+    </None>
+    <None Include="..\media\MRI-Head.pvm">
+      <Filter>Media Files</Filter>
+    </None>
+    <None Include="..\media\mri-head.raw">
+      <Filter>Media Files</Filter>
+    </None>
+    <None Include="..\media\skull.map">
+      <Filter>Media Files</Filter>
+    </None>
+    <None Include="..\media\skull.raw">
+      <Filter>Media Files</Filter>
+    </None>
+    <None Include="..\media\VisMale.pvm">
+      <Filter>Media Files</Filter>
+    </None>
+    <None Include="..\media\vismale.raw">
+      <Filter>Media Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\VoxelGame.ico">
@@ -181,6 +208,24 @@
     </Image>
     <Image Include="res\Toolbar.bmp">
       <Filter>Misc Files\Resource Files</Filter>
+    </Image>
+    <Image Include="..\media\fire.bmp">
+      <Filter>Media Files</Filter>
+    </Image>
+    <Image Include="..\media\hud - copia.bmp">
+      <Filter>Media Files</Filter>
+    </Image>
+    <Image Include="..\media\hud.bmp">
+      <Filter>Media Files</Filter>
+    </Image>
+    <Image Include="..\media\hud2.bmp">
+      <Filter>Media Files</Filter>
+    </Image>
+    <Image Include="..\media\pres.bmp">
+      <Filter>Media Files</Filter>
+    </Image>
+    <Image Include="..\media\pres_fondo.bmp">
+      <Filter>Media Files</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>

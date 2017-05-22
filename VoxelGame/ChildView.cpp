@@ -190,8 +190,8 @@ void ChildView::RenderLoop()
                     break;
 
                 }
-                break;
 
+                break;
             }
         }
     }

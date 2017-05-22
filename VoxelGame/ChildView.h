@@ -26,7 +26,7 @@ private:
     int sensibilidad;
     bool filterKeyPressed;
     bool _demoKeyPressed;
-	float time;
+    float time;
     bool demoMode;
     bool moveForeward;
     int totalFrames;
@@ -34,6 +34,6 @@ private:
     void MoveCameraWithMouse(vec3 &cero, long double &movimientoHorizontal, long double &movimientoVertical, double elapsed_time);
     void MoveCameraWithKeyboard(double elapsed_time);
     void SetFiltroWithKeyboard();
-	void SetDemoMode();
-	float Clamp256(float x);
+    void SetDemoMode();
+    float Clamp256(float x);
 };
