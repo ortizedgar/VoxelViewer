@@ -24,7 +24,7 @@ public:
     void renderText(float k, int px, int py, char *text);
     void renderCircle(int px, int py, int r);
     void renderGradientRect(int px0, int py0, int dx, int dy);
-    void renderGradientRoundRect(int px0, int py0, int dx, int dy, int prx , int pry);
+    void renderGradientRoundRect(int px0, int py0, int dx, int dy, int prx, int pry);
     void renderGradientRoundRect2(int px0, int py0, int dx, int dy, int prx, int pry);
     void renderGradientRoundRect3(int px0, int py0, int dx, int dy, int prx, int pry);
     void renderGradientLine(int px0, int py0, int px1, int py1);
@@ -44,6 +44,7 @@ public:
     vec3 U, V;
     float voxel_step0;
     float voxel_step;
+    float cant_total;
     int filtro;
     float mr, mg, mb;
     bool target_hit;
@@ -58,20 +59,18 @@ public:
     GLint fbHeight;
     bool modo_aceleracion;
     bool modo_visionX;
-    float E;		// escala global
+    float E;        // escala global
 
     // Fonts
     Glyph glyphs[255];
 
     // imagen presentacion
-    Texture2d pres , hud , fondo , fire;
+    Texture2d pres, hud, fondo, fire;
 
     // ecg
     int cant_muestras;
     float ECG[65535];
     void initECG();
-
-
 
 private:
     void CheckCompilationStatus(GLhandleARB * vs_main);
@@ -85,8 +84,8 @@ private:
     void RenderEndScreen();
     void RenderGame();
     void RenderStartScreen();
-    void RenderFullScreenQuad(int texId );
-    void RenderQuad(Texture2d *tx,int px,int py , float an =0 ,float k=1);
+    void RenderFullScreenQuad(int texId);
+    void RenderQuad(Texture2d *tx, int px, int py, float an = 0, float k = 1);
     GLhandleARB _vertexShaderRayCasting, _fragmentShaderRayCasting, _rayCastingShaderProgram;
     GLhandleARB _vertexShaderRayCasting2, _fragmentShaderRayCasting2, _rayCastingShaderProgram2;
     GLhandleARB _vertexShaderTextureVR, _fragmentShaderTextureVR, _textureVRShaderProgram;

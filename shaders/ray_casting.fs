@@ -9,7 +9,8 @@ uniform int game_status;
 uniform int filter;
 uniform float time;
 varying vec3 vTexCoord;
-const float cant_total = 15.0;
+//const float cant_total = 1;
+uniform float cant_total;
 
 // Transfer function
 vec3 transfer(float I)
@@ -86,5 +87,5 @@ void main()
     }
 
     gl_FragColor = vec4(S, 1.0);
-	
+    
 }

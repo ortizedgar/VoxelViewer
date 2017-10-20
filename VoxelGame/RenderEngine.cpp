@@ -19,8 +19,6 @@ RenderEngine::RenderEngine()
     V = vec3(0, 0, 1);
     timer_catch = 0;
     timer_fire = 0;
-    voxel_step = 0.5;
-    voxel_step0 = 75.0;
     vel_tras = 20;
     max_vel_tras = 80;
     lookFrom = vec3(-80, 0, 0);
@@ -304,6 +302,7 @@ void RenderEngine::RayCasting()
     glUniform3f(glGetUniformLocation(this->_rayCastingShaderProgram, "iDx"), static_cast<float>(Dx.x), static_cast<float>(Dx.y), static_cast<float>(Dx.z));
     glUniform3f(glGetUniformLocation(this->_rayCastingShaderProgram, "iDy"), static_cast<float>(Dy.x), static_cast<float>(Dy.y), static_cast<float>(Dy.z));
     glUniform1f(glGetUniformLocation(this->_rayCastingShaderProgram, "voxel_step"), voxel_step);
+    glUniform1f(glGetUniformLocation(this->_rayCastingShaderProgram, "cant_total"), cant_total);
     glUniform1f(glGetUniformLocation(this->_rayCastingShaderProgram, "voxel_step0"), voxel_step0);
     glUniform1i(glGetUniformLocation(this->_rayCastingShaderProgram, "game_status"), game_status);
     glUniform1f(glGetUniformLocation(this->_rayCastingShaderProgram, "time"), time);

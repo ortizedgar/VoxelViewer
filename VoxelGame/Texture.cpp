@@ -11,7 +11,10 @@ Texture::Texture()
     this->dy(0);
     this->dz(0);
     this->id(0);
-    this->_anomalies = 100;
+    //this->_anomalies = 100;
+    auto settingsSection = L"Settings";
+    auto filePath = L"./Settings.ini";
+    this->_anomalies = GetPrivateProfileInt(settingsSection, L"cantidadDeEsferas", 100, filePath);
     this->_anomalieRadius = 8;
 }
 
@@ -248,116 +251,116 @@ bool Texture::CreateFromTest(int n, int nWidth_i, int nHeight_i, int nSlices_i)
 
 Texture2d::Texture2d()
 {
-	id = dx = dy = 0;
+    id = dx = dy = 0;
 }
 
 Texture2d::~Texture2d()
 {
-	if (id != 0)
-	{
-		glDeleteTextures(1, (GLuint*)&id);
-	}
+    if (id != 0)
+    {
+        glDeleteTextures(1, (GLuint*)&id);
+    }
 }
 
 bool Texture2d::CreateFromFile(LPCTSTR lpDataFile_i, char color_key)
 {
-	FILE *file;
-	BYTE header[54];
-	unsigned int dataPos;
-	unsigned int size;
-	BYTE *data , *rgba;
+    FILE *file;
+    BYTE header[54];
+    unsigned int dataPos;
+    unsigned int size;
+    BYTE *data , *rgba;
 
-	USES_CONVERSION;
-	file = fopen(W2A(lpDataFile_i), "rb");
+    USES_CONVERSION;
+    file = fopen(W2A(lpDataFile_i), "rb");
 
-	if (file == NULL)
-	{
-		return false;
-	}
+    if (file == NULL)
+    {
+        return false;
+    }
 
-	if (fread(header, 1, 54, file) != 54)
-	{
-		return false;
-	}
+    if (fread(header, 1, 54, file) != 54)
+    {
+        return false;
+    }
 
-	if (header[0] != 'B' || header[1] != 'M')
-	{
-		return false;
-	}
+    if (header[0] != 'B' || header[1] != 'M')
+    {
+        return false;
+    }
 
-	dataPos = *(int*)&(header[0x0A]);
-	size = *(int*)&(header[0x22]);
-	dx = *(int*)&(header[0x12]);
-	dy = *(int*)&(header[0x16]);
+    dataPos = *(int*)&(header[0x0A]);
+    size = *(int*)&(header[0x22]);
+    dx = *(int*)&(header[0x12]);
+    dy = *(int*)&(header[0x16]);
 
-	if (size == NULL)
-		size = dx * dy * 3;
-	if (dataPos == NULL)
-		dataPos = 54;
+    if (size == NULL)
+        size = dx * dy * 3;
+    if (dataPos == NULL)
+        dataPos = 54;
 
-	data = new BYTE[size];
-	rgba = new BYTE[dx * dy * 4 ];
+    data = new BYTE[size];
+    rgba = new BYTE[dx * dy * 4 ];
 
-	fread(data, 1, size, file);
+    fread(data, 1, size, file);
 
-	// Transformo de BGR a RGBA 
-	int l = dx * dy;
-	int t = 0;
-	for (int i = 0; t<l; ++i , ++t)
-	{
-		BYTE b = data[i * 3 + 0];
-		BYTE g = data[i * 3 + 1];
-		BYTE r = data[i * 3 + 2];
+    // Transformo de BGR a RGBA 
+    int l = dx * dy;
+    int t = 0;
+    for (int i = 0; t<l; ++i , ++t)
+    {
+        BYTE b = data[i * 3 + 0];
+        BYTE g = data[i * 3 + 1];
+        BYTE r = data[i * 3 + 2];
 
-		if (color_key)		// usar color key
-		{
-			if(b < 5 && g < 5 && r < 5)
-				rgba[t * 4 + 3] =0;		// color key
-			else
-			{
-				rgba[t * 4 + 3] = 255;		// A
-				if (color_key == 1)
-				{
-					// y la hago monocroma
-					rgba[t * 4 + 0] = 255;		// R
-					rgba[t * 4 + 1] = 255;		// G
-					rgba[t * 4 + 2] = 255;		// B
-				}
-				else
-				{
-					rgba[t * 4 + 0] = r;
-					rgba[t * 4 + 1] = g;
-					rgba[t * 4 + 2] = b;
-				}
-			}
-		}
-		else
-		{
-			rgba[t * 4 + 0] = r;
-			rgba[t * 4 + 1] = g;
-			rgba[t * 4 + 2] = b;
-			rgba[t * 4 + 3] = 255;
+        if (color_key)		// usar color key
+        {
+            if(b < 5 && g < 5 && r < 5)
+                rgba[t * 4 + 3] =0;		// color key
+            else
+            {
+                rgba[t * 4 + 3] = 255;		// A
+                if (color_key == 1)
+                {
+                    // y la hago monocroma
+                    rgba[t * 4 + 0] = 255;		// R
+                    rgba[t * 4 + 1] = 255;		// G
+                    rgba[t * 4 + 2] = 255;		// B
+                }
+                else
+                {
+                    rgba[t * 4 + 0] = r;
+                    rgba[t * 4 + 1] = g;
+                    rgba[t * 4 + 2] = b;
+                }
+            }
+        }
+        else
+        {
+            rgba[t * 4 + 0] = r;
+            rgba[t * 4 + 1] = g;
+            rgba[t * 4 + 2] = b;
+            rgba[t * 4 + 3] = 255;
 
-		}
+        }
 
-		int col = i%dx;
-		if (col == dx - 1)		// el ultimo de la linea
-		{
-			int resto;
-			if ((resto = (col % 4))>0 && resto<4)
-				i += (4 - resto) - 1;
-		}
+        int col = i%dx;
+        if (col == dx - 1)		// el ultimo de la linea
+        {
+            int resto;
+            if ((resto = (col % 4))>0 && resto<4)
+                i += (4 - resto) - 1;
+        }
 
-	}
+    }
 
-	fclose(file);
-	glGenTextures(1, (GLuint*)&id);
-	glBindTexture(GL_TEXTURE_2D, id);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, dx, dy, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba);
+    fclose(file);
+    glGenTextures(1, (GLuint*)&id);
+    glBindTexture(GL_TEXTURE_2D, id);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, dx, dy, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba);
 
-	delete[] data;
-	delete[] rgba;
-	return true;
+    delete[] data;
+    delete[] rgba;
+    return true;
 }

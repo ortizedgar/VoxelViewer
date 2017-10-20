@@ -27,6 +27,9 @@ ChildView::ChildView()
     this->moveForeward = true;
     this->totalFrames = 0;
     this->mouseDemoSignal = 0;
+    this->escena.cant_total = static_cast<float>(GetPrivateProfileInt(settingsSection, L"cant_step", 20, filePath));
+    this->escena.voxel_step0 = static_cast<float>(GetPrivateProfileInt(settingsSection, L"step0", 75, filePath));
+    this->escena.voxel_step = static_cast<float>(GetPrivateProfileInt(settingsSection, L"dist_step", 2, filePath));
 }
 
 ChildView::~ChildView()
